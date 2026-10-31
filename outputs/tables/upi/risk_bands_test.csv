@@ -1,0 +1,4 @@
+band,transactions,pct_of_txns,frauds,pct_of_all_fraud,genuine,fraud_rate_in_band_pct,cost_from_fraud,cost_from_genuine,total_cost
+APPROVE,49783,99.566,96,100.0,49687,0.19283691219894342,480000.0,0.0,480000.0
+STEP-UP OTP,212,0.424,0,0.0,212,0.0,0.0,3180.0,3180.0
+BLOCK,5,0.01,0,0.0,5,0.0,0.0,1500.0,1500.0

@@ -1,0 +1,8 @@
+Check,Finding,Treatment
+Missing values,0 missing cells,None needed
+Duplicates,0 exact duplicates; 0 duplicates ignoring the ID; 0 duplicate IDs,None to drop
+Impossible amounts,"min ₹10, max ₹42,099; 0 non-positive",None impossible; heavy right tail handled with log transform
+Malformed timestamps,0 unparseable; hour_of_day mismatches=0; day_of_week mismatches=0; range 2024-01-01 → 2024-12-30,Timestamps valid; derived columns consistent
+Inconsistent categories,"112,445 P2P (person-to-person) rows carry a merchant category; Recharge rows appear under Education/Fuel/Healthcare; amount distribution is identical across all 4 types (median ₹618–632)","Retained but flagged: columns look independently simulated, so they cannot carry real fraud behaviour"
+Leakage columns,`transaction_status` (SUCCESS/FAILED) is set AFTER the payment is processed — a fraud block would show as FAILED in production; `transaction id` is a row identifier,Both excluded from features
+Account behaviour,No sender/receiver account ID or device ID,Velocity / new-payee / mule-account features cannot be built — main limitation

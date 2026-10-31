@@ -1,0 +1,11 @@
+# datasets are not committed — put creditcard.csv and "upi_transactions 2024.csv" (or their zips) in data/
+data/*.csv
+data/*.zip
+# pipeline cache and logs
+outputs/cache/
+outputs/*.log
+__pycache__/
+catboost_info/
+.ipynb_checkpoints/
+.venv/
+node_modules/
