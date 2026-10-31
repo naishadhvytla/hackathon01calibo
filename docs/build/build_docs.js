@@ -1,7 +1,7 @@
 // Builds the three FraudGuard Word documents from the pipeline outputs (numbers are read, not typed).
 const fs = require("fs"), path = require("path");
 const L = require("./lib");
-const { P, H1, H2, Bul, Num, Caption, Callout, Img, Tbl, makeDoc, save, inr, inrFull, pct, csv, PORTRAIT_W: PW, LANDSCAPE_W: LW, PageBreak } = L;
+const { LIVE, P, H1, H2, Bul, Num, Caption, Callout, Img, Tbl, makeDoc, save, inr, inrFull, pct, csv, PORTRAIT_W: PW, LANDSCAPE_W: LW, PageBreak } = L;
 const ROOT = path.resolve(__dirname, "../..");
 const OUT = path.join(ROOT, "docs");
 const J = (f) => JSON.parse(fs.readFileSync(f, "utf8").replace(/\bNaN\b/g, "null").replace(/-?Infinity\b/g, "null"));
@@ -44,6 +44,7 @@ async function modelComparison() {
       H1("1. The decision in one paragraph"),
       Callout(`**Selected model: ${FINAL}.** It has the best validation PR-AUC (${finalRow.val_pr_auc.toFixed(3)}) and the lowest validation cost (${inrFull(finalRow.val_cost)}) among the shortlisted models. On the untouched test period it reaches PR-AUC ${finalRow.test_pr_auc.toFixed(3)} (95% CI ${T.ci_pr_auc[0].toFixed(2)}–${T.ci_pr_auc[1].toFixed(2)}), against ${(fTest / nTest).toFixed(4)} for a random ranking, and a label-permutation test gives p < 0.002. It scores a transaction in about ${(finalRow.ms_per_txn * 1000).toFixed(1)} µs and has an exact TreeSHAP explanation.`),
       P(`We compared **${cmp.length} supervised candidates** and **${anom.length + 1} label-free detectors**. The selection rule was written before test was opened. The top six models overlap within their confidence intervals on test, so the choice rests on cost and operability, not on a clear accuracy gap.`),
+      P("**Owners:** supervised comparison and imbalance methods (PS4) M. Kumara Swamy · label-free detectors (PS5) V. Naishadh · final selection and explanation (PS8) M. Suman Srinivas."),
       H1("2. Protocol (how every model was treated)"),
       Tbl(["Split", "Rows", "Frauds", "Fraud rate", "Used for"], S.split.map((s) => [s.split, s.rows.toLocaleString("en-IN"), s.frauds, s.fraud_rate_pct.toFixed(3) + "%",
         { train: "fitting every model; Optuna time-series folds; deep-model early stopping (last 15%)", validation: "model selection, calibration, both thresholds", test: "scored once, at the end" }[s.split]]), [1300, 1300, 1000, 1200, 4514], { right: [1, 2, 3] }),
@@ -117,6 +118,7 @@ async function costAnalysis() {
   const doc = makeDoc("Cost Analysis & Risk-Score Rule", "From model score to approve / step-up OTP / block, using expected rupee cost · thresholds chosen on validation, frozen, scored once on test · ULB credit card (primary), UPI 2024 (control)", [{ children: [
     H1("1. Result"),
     Callout(`On the unseen test period (${nTest.toLocaleString("en-IN")} payments, ${fTest} frauds, about 7.7 hours of traffic), the three-band rule stops or challenges **${caughtOrChallenged} of ${fTest} frauds (${pct(caughtOrChallenged / fTest)})**. It blocks only 6 genuine customers and challenges ${B["STEP-UP OTP"].genuine} with an OTP. Expected cost falls from **${inrFull(approveAll)}** with no model to **${inrFull(three)}** (95% CI ${inr(S.three_band_ci[0])}–${inr(S.three_band_ci[1])}), a 78% reduction. The default 0.5 threshold costs ${inrFull(def05)}.`),
+    P("**Owners:** cost-based threshold (PS6) V. Naishadh · approve / step-up OTP / block rule (PS7) M. Suman Srinivas. The same rule runs live in the web app's Policy page: " + LIVE),
     H1("2. The cost model"),
     P("Expected cost = missed fraud × ₹X + genuine blocked × ₹Y + every OTP challenge × ₹Z + fraud that passes OTP × ₹X."),
     Tbl(["Assumption", "Value", "Basis"], [
@@ -268,6 +270,15 @@ async function businessReport() {
     Bul("Notebook (both datasets, seed 42, reproducible from scratch), source library, README, architecture decision records."),
     Bul("Web app (Netlify + Supabase): Credit Card and UPI modes, live scoring with SHAP, batch CSV scoring, policy lab, evidence pages, sign-in with saved scorings and audit log."),
     Bul("Model Comparison and Cost Analysis & Risk-Score Rule documents; presentation deck."),
+    Bul(`**Live app:** ${LIVE} (create an account, confirm the email, sign in; Credit Card and UPI modes).`),
+    H1("13. Team and ownership"),
+    Tbl(["Member", "Problem statements", "Sections of this report"], [
+      ["N. Varshitha", "PS1 Data quality & reliability · PS2 Fraud lens & accuracy trap", "§2 Datasets · §3 Cleaning · §4 Accuracy trap"],
+      ["M. Kumara Swamy", "PS3 Fraud patterns (EDA) · PS4 Supervised learning", "§5 Where fraud lives · §6 What we built"],
+      ["V. Naishadh", "PS5 Anomaly detection · PS6 Cost-based threshold", "§6 Label-free detectors · §7 Threshold and cost"],
+      ["M. Suman Srinivas", "PS7 Risk-score rule · PS8 Selection, explanation & actions", "§7 Decision rule · §8 Explanation · §9 Actions"],
+    ], [1900, 3907, 3507], { boldFirst: true, size: 16 }),
+    Caption("Group 8 · Matrix Mechanics. Each member owns two problem statements end to end in the notebook, the documents and the presentation."),
   ] }]);
   await save(doc, path.join(OUT, "FraudGuard_Business_Report.docx"));
 }

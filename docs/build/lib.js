@@ -5,15 +5,17 @@ const { Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, WidthType,
         BorderStyle, Footer, PageNumber, LevelFormat, PageOrientation, TableLayoutType } = D;
 
 const NAVY = "14284B", MUTED = "5B677A", LINE = "D3D9E2", TINT = "EEF2F7", HL = "FFF4D6";
+const TEAM = "Group 8 · Matrix Mechanics", MEMBERS = "N. Varshitha · M. Kumara Swamy · V. Naishadh · M. Suman Srinivas", LIVE = "https://calibofraudguard.netlify.app/", REPO = "https://github.com/naishadhvytla/hackathon01calibo";
 const PORTRAIT_W = 9314, LANDSCAPE_W = 14246; // DXA content widths (A4, 0.9" margins)
 
 function runs(text, base = {}) {
   // **bold**, *italic* inline markup
-  const out = []; const re = /(\*\*[^*]+\*\*|\*[^*]+\*)/g; let last = 0, m;
+  const out = []; const re = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g; let last = 0, m;
   while ((m = re.exec(text))) {
     if (m.index > last) out.push(new TextRun({ text: text.slice(last, m.index), ...base }));
     const t = m[0];
     if (t.startsWith("**")) out.push(new TextRun({ text: t.slice(2, -2), bold: true, ...base }));
+    else if (t.startsWith("`")) out.push(new TextRun({ text: t.slice(1, -1), font: "Consolas", ...base }));
     else out.push(new TextRun({ text: t.slice(1, -1), italics: true, ...base }));
     last = m.index + t.length;
   }
@@ -59,15 +61,18 @@ function Tbl(headers, rows, widths, o = {}) {
 
 function makeDoc(title, subtitle, sections) {
   const footer = (name) => new Footer({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [
-    new TextRun({ text: `FraudGuard · ${name} · page `, size: 16, color: MUTED }), new TextRun({ children: [PageNumber.CURRENT], size: 16, color: MUTED })] })] });
+    new TextRun({ text: `FraudGuard · ${TEAM} · ${name} · page `, size: 16, color: MUTED }), new TextRun({ children: [PageNumber.CURRENT], size: 16, color: MUTED })] })] });
   const titleBlock = [
     new Paragraph({ children: [new TextRun({ text: "FraudGuard", bold: true, size: 20, color: "B5470A" })], spacing: { after: 40 } }),
     new Paragraph({ heading: HeadingLevel.TITLE, children: [new TextRun(title)], spacing: { after: 60 } }),
-    new Paragraph({ children: [new TextRun({ text: subtitle, color: MUTED, size: 20 })], spacing: { after: 240 },
+    new Paragraph({ children: [new TextRun({ text: subtitle, color: MUTED, size: 20 })], spacing: { after: 80 } }),
+    new Paragraph({ children: [new TextRun({ text: TEAM, bold: true, size: 20, color: NAVY }), new TextRun({ text: "  ·  " + MEMBERS, size: 20, color: "1F2A3C" })], spacing: { after: 40 } }),
+    new Paragraph({ children: [new TextRun({ text: "Live app: ", size: 18, color: MUTED }), new D.ExternalHyperlink({ link: LIVE, children: [new TextRun({ text: LIVE, size: 18, color: "2F6FEB", underline: {} })] }),
+      new TextRun({ text: "   ·   Code: ", size: 18, color: MUTED }), new D.ExternalHyperlink({ link: REPO, children: [new TextRun({ text: REPO.replace("https://", ""), size: 18, color: "2F6FEB", underline: {} })] })], spacing: { after: 240 },
       border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: LINE, space: 6 } } }),
   ];
   return new D.Document({
-    creator: "FraudGuard team", title, description: subtitle,
+    creator: TEAM, title, description: subtitle,
     styles: {
       default: { document: { run: { font: "Calibri", size: 21, color: "1F2A3C" } } },
       paragraphStyles: [
@@ -99,4 +104,4 @@ function csv(file) {
   const split = (l) => { const o = []; let cur = "", q = false; for (const ch of l) { if (ch === '"') q = !q; else if (ch === "," && !q) { o.push(cur); cur = ""; } else cur += ch; } o.push(cur); return o; };
   const H = split(h); return rows.map((r) => Object.fromEntries(split(r).map((v, i) => [H[i], isNaN(+v) || v === "" ? v : +v])));
 }
-module.exports = { P, H1, H2, Bul, Num, Caption, Spacer, PageBreak, Callout, Img, Tbl, makeDoc, save, inr, inrFull, pct, csv, PORTRAIT_W, LANDSCAPE_W };
+module.exports = { TEAM, MEMBERS, LIVE, REPO, P, H1, H2, Bul, Num, Caption, Spacer, PageBreak, Callout, Img, Tbl, makeDoc, save, inr, inrFull, pct, csv, PORTRAIT_W, LANDSCAPE_W };

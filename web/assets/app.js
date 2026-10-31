@@ -401,7 +401,7 @@
     const login = kind !== "signup";
     $("#main").innerHTML = `<div class="gate">
       <section class="gate-intro">
-        <p class="eyebrow">KLU + Path-3 · ML-02</p>
+        <p class="eyebrow">Group 8 · Matrix Mechanics · KLU + Path-3 ML-02</p>
         <h1>Every payment gets a decision and a reason.</h1>
         <p class="lede">FraudGuard scores credit-card and UPI payments, returns approve, step-up OTP or block, explains the call with SHAP, and shows the rupee cost behind every threshold.</p>
         <ul class="gate-points">

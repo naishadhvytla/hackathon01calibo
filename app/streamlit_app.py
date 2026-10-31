@@ -57,6 +57,7 @@ def decide(s):
 
 # ── sidebar: pick a transaction ───────────────────────────────────────────────
 st.sidebar.title("🛡️ FraudGuard")
+st.sidebar.caption("Group 8 · Matrix Mechanics — N. Varshitha · M. Kumara Swamy · V. Naishadh · M. Suman Srinivas  \nLive web app: https://calibofraudguard.netlify.app/")
 st.sidebar.caption(f"Model: **{B['final']}**  \nThresholds frozen on validation: T_otp={B['T_otp']:.4f}, T_block={B['T_block']:.4f}")
 kind = st.sidebar.radio("Load a held-out test transaction", ["Random fraud", "Random genuine", "Pick by row"])
 if "row" not in st.session_state or st.session_state.get("kind") != kind or st.sidebar.button("🎲 New random transaction"):

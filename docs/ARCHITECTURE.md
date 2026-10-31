@@ -1,5 +1,7 @@
 # FraudGuard — Architecture & Decision Records
 
+**Group 8 · Matrix Mechanics** (N. Varshitha · M. Kumara Swamy · V. Naishadh · M. Suman Srinivas) · Live app: <https://calibofraudguard.netlify.app/>
+
 System goal: score every payment in real time, and turn the score into **approve / step-up OTP / block**. Choose that rule by expected rupee cost, not accuracy.
 
 ```

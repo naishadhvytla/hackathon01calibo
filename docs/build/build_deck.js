@@ -14,7 +14,7 @@ const THEME = { name: "FraudGuard", headFontFace: "Cambria", bodyFontFace: "Cali
 const HEX = { navy: "14284B", ink: "2E3B52", muted: "5B6B85", paper: "F2F4F7", line: "D8DEE7", gold: "D8A21B", green: "1E7A52", amber: "9A6B00", red: "B03A22", ice: "C9D5E8", white: "FFFFFF" };
 
 const pres = new pptxgen();
-pres.layout = "LAYOUT_WIDE"; pres.title = "FraudGuard — payment fraud decisions"; pres.author = "FraudGuard team"; pres.company = "KLU + Path-3";
+pres.layout = "LAYOUT_WIDE"; pres.title = "FraudGuard — payment fraud decisions"; pres.author = "Group 8 · Matrix Mechanics"; pres.company = "KLU + Path-3";
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
 const C = pres.SchemeColor;
 const W = 13.333, H = 7.5, MX = 0.6;
@@ -27,7 +27,7 @@ pres.defineSlideMaster({ title: "SECTION", background: { color: HEX.navy }, slid
   { placeholder: { options: { name: "title", type: "title", x: MX, y: 2.6, w: 10, h: 1.2, fontFace: "Cambria", fontSize: 40, bold: true, color: C.background1, valign: "bottom", align: "left", margin: 0 }, text: "" } },
   { placeholder: { options: { name: "body", type: "body", x: MX, y: 3.95, w: 10, h: 0.9, fontFace: "Calibri", fontSize: 18, color: C.accent6, valign: "top", margin: 0 }, text: "" } } ] });
 pres.defineSlideMaster({ title: "CONTENT", background: { color: HEX.white }, slideNumber: { x: W - 1.0, y: H - 0.45, w: 0.5, h: 0.3, fontSize: 10, color: C.accent5 },
-  objects: [ { text: { text: "FraudGuard · KLU + Path-3 · ML-02", options: { x: MX, y: H - 0.45, w: 5, h: 0.3, fontSize: 10, color: C.accent5, margin: 0 } } },
+  objects: [ { text: { text: "FraudGuard · Group 8 · Matrix Mechanics", options: { x: MX, y: H - 0.45, w: 5, h: 0.3, fontSize: 10, color: C.accent5, margin: 0 } } },
     { placeholder: { options: { name: "title", type: "title", x: MX, y: 0.4, w: W - 2 * MX, h: 0.95, fontFace: "Cambria", fontSize: 30, bold: true, color: C.text1, valign: "top", align: "left", margin: 0 }, text: "" } } ] });
 
 // ---------- helpers
@@ -48,7 +48,12 @@ const chartBase = (title) => ({ showTitle: true, title, titleFontFace: "+mn-lt",
   catAxisLabelColor: HEX.ink, valAxisLabelColor: HEX.muted, catAxisLabelFontSize: 12, valAxisLabelFontSize: 11, valGridLine: { color: HEX.line, size: 0.5 }, catGridLine: { style: "none" },
   dataLabelFontFace: "+mn-lt", dataLabelFontSize: 12, dataLabelColor: HEX.ink, legendFontFace: "+mn-lt", legendFontSize: 12, legendColor: HEX.ink });
 const sec = (title) => pres.addSection({ title });
-const content = (title, section) => { const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: section }); s.addText(title, { placeholder: "title" }); return s; };
+const TEAM = "Group 8 · Matrix Mechanics", LIVE = "https://calibofraudguard.netlify.app/";
+const VAR = "N. Varshitha", KUM = "M. Kumara Swamy", NAI = "V. Naishadh", SUM = "M. Suman Srinivas";
+// presenter tag, bottom right beside the slide number: "PS3 · M. Kumara Swamy"
+const who = (s, ps, name, dark = false) => s.addText([{ text: ps ? ps + "  ·  " : "", options: { color: dark ? HEX.ice : HEX.muted } }, { text: name, options: { bold: true, color: dark ? HEX.white : HEX.navy } }],
+  { x: W - 6.3, y: H - 0.45, w: 5.1, h: 0.3, fontSize: 11, align: "right", margin: 0, fontFace: "Calibri", isTextBox: true });
+const content = (title, section, ps, name) => { const s = pres.addSlide({ masterName: "CONTENT", sectionTitle: section }); s.addText(title, { placeholder: "title" }); if (name) who(s, ps, name); return s; };
 
 const B = Object.fromEntries(S.bands.test.map((b) => [b.band, b])), pol = S.policies_test;
 const approveAll = pol["Approve everything (no model)"].test_cost, three = pol["3-band rule (approve / OTP / block)"].test_cost, d05 = pol["Model @ default 0.5 (block/approve)"].test_cost, cthr = pol["Model @ cost threshold (block/approve)"].test_cost;
@@ -65,12 +70,26 @@ s.addText("Every payment gets a fraud score; the score becomes approve, step-up 
 T(s, "KLU + Path-3 · ML-02 · Real-time UPI / digital payment fraud detection", { x: MX, y: 0.6, w: 10, h: 0.4, fontSize: 14, color: C.accent1 });
 [[pct(1 - three / approveAll, 0), "lower expected fraud cost on unseen data"], [pct((B["STEP-UP OTP"].transactions + B.BLOCK.transactions) / nT, 2), "of customers see any friction"], [`${caught} / ${fT}`, "test frauds stopped or challenged"]].forEach(([b, t], i) =>
   T(s, [{ text: b, options: { fontFace: "Cambria", fontSize: 34, bold: true, color: C.background1, breakLine: true } }, { text: t, options: { fontSize: 13, color: C.accent6 } }], { x: MX + i * 3.4, y: 5.75, w: 3.1, h: 1.1, objectName: A() }));
-T(s, "[Team name] · 31 October 2026", { x: W - 4.6, y: 0.6, w: 4.0, h: 0.4, fontSize: 14, color: C.accent6, align: "right" });
+T(s, [{ text: TEAM, options: { bold: true, color: C.accent1, breakLine: true } }, { text: "31 October 2026", options: { color: C.accent6 } }], { x: W - 5.6, y: 0.6, w: 5.0, h: 0.7, fontSize: 14, align: "right" });
+T(s, `${VAR} · ${KUM} · ${NAI} · ${SUM}`, { x: MX, y: 1.15, w: 8.5, h: 0.4, fontSize: 14, color: HEX.white });
 s.addNotes("Open with the decision problem: every payment needs a decision in a fraction of a second. FraudGuard scores it and turns the score into approve, step-up OTP or block, with thresholds set by rupee cost. Headline: on the held-out test period, expected cost fell 78% against approving everything, and only 0.33% of customers felt any friction.");
 
-/* ===================== 2 · The decision problem */
+/* ===================== 2 · Team and ownership */
+s = content("Group 8 · Matrix Mechanics: who owns what", "Opening");
+const tH = (t) => ({ text: t, options: { bold: true, color: HEX.white, fill: { color: HEX.navy } } });
+s.addTable([[tH("Member"), tH("Problem statements owned"), tH("Presents"), tH("Time")],
+  [{ text: VAR, options: { bold: true } }, "PS1 Data quality & reliability\nPS2 Fraud lens & the accuracy trap", "Slides 3–8: the problem, the accuracy trap, datasets, cleaning, UPI signal check", "≈ 2½ min"],
+  [{ text: KUM, options: { bold: true } }, "PS3 Fraud patterns (EDA)\nPS4 Supervised learning", "Slides 9–15: where fraud lives, the pipeline, 22 models, weights vs SMOTE", "≈ 2½ min"],
+  [{ text: NAI, options: { bold: true } }, "PS5 Anomaly detection\nPS6 Cost-based threshold", "Slides 16–19: label-free detectors, the ₹ threshold, cost sensitivity", "≈ 2 min"],
+  [{ text: SUM, options: { bold: true } }, "PS7 Risk-score decision rule\nPS8 Selection, explanation & actions", "Slides 20–27: three bands, ₹ saved, SHAP, three actions, live demo", "≈ 3 min"],
+], { x: MX, y: 1.5, w: W - 2 * MX, colW: [2.4, 3.9, 4.73, 1.1], fontFace: "Calibri", fontSize: 15, color: HEX.ink, border: { type: "solid", pt: 0.75, color: HEX.line }, valign: "middle", rowH: [0.5, 0.95, 0.95, 0.95, 0.95], objectName: A() });
+T(s, [{ text: "Live app  ", options: { bold: true, color: C.text1 } }, { text: "calibofraudguard.netlify.app", options: { hyperlink: { url: LIVE }, color: HEX.navy } }, { text: "      Code  ", options: { bold: true, color: C.text1 } }, { text: "github.com/naishadhvytla/hackathon01calibo", options: { hyperlink: { url: "https://github.com/naishadhvytla/hackathon01calibo" }, color: HEX.navy } }],
+  { x: MX, y: 6.4, w: W - 2 * MX, h: 0.4, fontSize: 15, objectName: A() });
+s.addNotes("Introduce the team in one breath. Each member owns two problem statements end to end and presents them; the presenter's name is at the bottom right of every slide. About 10 minutes in total.");
+
+/* ===================== 3 · The decision problem */
 sec("The problem");
-s = content("Each payment needs a decision in milliseconds, and both mistakes cost money", "The problem");
+s = content("Each payment needs a decision in milliseconds, and both mistakes cost money", "The problem", "PS2", VAR);
 [["₹5,000", "Fraud approved", "Loss, chargeback, investigation", HEX.red], ["₹300", "Genuine payment blocked", "Friction, support call, churn risk", HEX.ink], ["₹15", "Step-up OTP challenge", "Mostly genuine drop-off (≈5% × ₹300); SMS < ₹1", HEX.amber]].forEach(([v, k, d, col], i) => {
   const x = MX + i * 4.1; card(s, x, 1.7, 3.8, 1.9, HEX.paper, A());
   T(s, [{ text: v, options: { fontFace: "Cambria", fontSize: 36, bold: true, color: col, breakLine: true } }, { text: k, options: { fontSize: 17, bold: true, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 14, color: C.accent5 } }], { x: x + 0.3, y: 1.9, w: 3.3, h: 1.8 });
@@ -79,12 +98,13 @@ card(s, MX, 4.2, W - 2 * MX, 1.25, "EAF0F8");
 T(s, [{ text: "What is step-up OTP?  ", options: { bold: true, color: C.text1 } }, { text: "Extra proof of identity asked only when a payment looks risky. The real owner types the one-time password and the payment goes through; a fraudster with stolen details usually cannot, because they don't have the phone. It does not stop scams where the victim is talked into typing the OTP, so we assume it stops 70% of fraud." }], { x: MX + 0.3, y: 4.35, w: W - 2 * MX - 0.6, h: 1.0, fontSize: 15 });
 T(s, [{ text: "Expected cost = ", options: { bold: true } }, { text: "missed fraud × ₹X  +  genuine blocked × ₹Y  +  OTP challenges × ₹Z  +  fraud that passes OTP × ₹X" }], { x: MX, y: 5.75, w: W - 2 * MX, h: 0.4, fontSize: 16, color: C.text1 });
 T(s, "No official ₹ figures were published, so these are stated assumptions. The notebook and the app's Policy page recompute every threshold for any values.", { x: MX, y: 6.25, w: W - 2 * MX, h: 0.4, fontSize: 13, color: C.accent5 });
-s.addNotes("Frame fraud loss against customer friction. We put a rupee price on each outcome: ₹5,000 for missed fraud, ₹300 for a wrongly blocked customer, ₹15 for an OTP challenge. The ₹15 is mostly genuine customers who abandon the payment (about 5% × ₹300), not the SMS. No official costs were given, so these are stated assumptions; slide 16 shows the decision barely moves when they change.");
+s.addNotes("Frame fraud loss against customer friction. We put a rupee price on each outcome: ₹5,000 for missed fraud, ₹300 for a wrongly blocked customer, ₹15 for an OTP challenge. The ₹15 is mostly genuine customers who abandon the payment (about 5% × ₹300), not the SMS. No official costs were given, so these are stated assumptions; slide 19 shows the decision barely moves when they change.");
 
 /* ===================== 3 · Accuracy trap */
 s = pres.addSlide({ masterName: "CONTENT", sectionTitle: "The problem" });
 s.background = { color: HEX.navy };
 s.addText([{ text: "The accuracy trap: 99.87% accurate, zero fraud caught", options: { color: HEX.white } }], { placeholder: "title" });
+who(s, "PS2", VAR, true);
 s.addChart(pres.charts.BAR, [
   { name: "Accuracy", labels: ["Do-nothing", "Model @ 0.5", "Model @ cost threshold"], values: [dn.accuracy, md.accuracy, mc.accuracy] },
   { name: "Recall (fraud caught)", labels: ["Do-nothing", "Model @ 0.5", "Model @ cost threshold"], values: [0, md.recall, mc.recall] },
@@ -100,10 +120,10 @@ s.addNotes("The wow-factor slide. Fraud is 0.13% of the test period, so labellin
 sec("Data");
 s = pres.addSlide({ masterName: "SECTION", sectionTitle: "Data" });
 s.addText("Can the data be trusted?", { placeholder: "title" });
-s.addText("Two datasets, one pipeline: one carries signal, one does not", { placeholder: "body" });
+s.addText(`Two datasets, one pipeline: one carries signal, one does not\nPresented by ${VAR} (PS1–2) and ${KUM} (PS3)`, { placeholder: "body" });
 
 /* ===================== 5 · Datasets */
-s = content("Two datasets, run through the identical pipeline", "Data");
+s = content("Two datasets, run through the identical pipeline", "Data", "PS1", VAR);
 const dsCard = (x, title, sub, rows, name) => { card(s, x, 1.55, 5.9, 4.6, HEX.paper, name);
   T(s, [{ text: title, options: { fontFace: "Cambria", fontSize: 22, bold: true, color: C.text1, breakLine: true } }, { text: sub, options: { fontSize: 13, color: C.accent5 } }], { x: x + 0.3, y: 1.75, w: 5.3, h: 0.9 });
   T(s, rows.map(([k, v], i) => ({ text: "", options: {} }) && [{ text: k + "  ", options: { bold: true, color: C.text1 } }, { text: v, options: { breakLine: i < rows.length - 1 } }]).flat(), { x: x + 0.3, y: 2.75, w: 5.3, h: 3.3, fontSize: 15, paraSpaceAfter: 8 }); };
@@ -116,7 +136,7 @@ dsCard(MX + 6.2, "UPI Transactions 2024", "Organiser-supplied, simulated UPI-sty
 s.addNotes("The brief told us to inspect the UPI file before choosing it, so we ran both datasets through the same code. Credit card: the Kaggle ULB benchmark with anonymised PCA features. UPI: the organiser's simulated file, which turns out to have no learnable signal.");
 
 /* ===================== 6 · Cleaning & leakage */
-s = content("Data quality audit: what we kept, dropped and excluded", "Data");
+s = content("Data quality audit: what we kept, dropped and excluded", "Data", "PS1", VAR);
 const hdr = (t) => ({ text: t, options: { bold: true, color: HEX.white, fill: { color: HEX.navy } } });
 s.addTable([
   [hdr("Check"), hdr("Credit card"), hdr("UPI 2024")],
@@ -131,14 +151,14 @@ s.addTable([
 s.addNotes("Every check the brief lists, for both datasets, with the treatment. Two things to stress: zero amounts are kept because they're a card-testing signal, not an error; and UPI's status column is excluded because a blocked fraud would show up as FAILED, so it leaks the outcome.");
 
 /* ===================== 7 · UPI has no signal */
-s = content("The UPI fraud label carries no learnable signal", "Data");
+s = content("The UPI fraud label carries no learnable signal", "Data", "PS1", VAR);
 img(s, FIG("upi", "07_pr_curves.png"), MX, 1.5, 7.4, 4.8, { name: A(), alt: "UPI precision-recall curves all on the random line" });
 [["13", "χ² tests; none survives multiple-testing correction"], ["0.47–0.54", "test ROC-AUC across all 22 models"], ["p = 0.78", "the validation 'winner' on test (p = 0.016 on validation)"], ["Approve all", "is the cost-optimal UPI policy: ₹4.80 L vs ₹4.85 L for any rule"]].forEach(([b, t], i) =>
   T(s, [{ text: b, options: { fontFace: "Cambria", fontSize: 26, bold: true, color: i === 3 ? HEX.green : C.text1, breakLine: true } }, { text: t, options: { fontSize: 14, color: C.accent5 } }], { x: 8.4, y: 1.55 + i * 1.25, w: 4.3, h: 1.15, objectName: A() }));
 s.addNotes("Every test came back at chance. The interesting one: the model that won on validation had p = 0.016, but on test p = 0.78. That's what picking the best of 22 models on noise looks like. So no UPI model is deployable; our recommendation 2 is about fixing UPI data capture.");
 
 /* ===================== 8 · Where fraud lives */
-s = content("On card data, fraud clusters in micro-amounts, the night and bursts", "Data");
+s = content("On card data, fraud clusters in micro-amounts, the night and bursts", "Data", "PS3", KUM);
 const ab0 = S.eda.amount_bands[0], az = S.eda.amount_zero.find((r) => r.amount_zero === 1), nt = S.eda.night_01_05;
 [[`${(ab0.fraud_rate_pct / (100 * S.n_fraud / S.n)).toFixed(0)}× · ${(az.fraud_rate_pct / (100 * S.n_fraud / S.n)).toFixed(0)}×`, "fraud rate at amounts ≤ 1.51 and at zero (card testing)"], [`${nt.share_fraud.toFixed(0)}% in ${nt.share_txns.toFixed(1)}%`, "of fraud in the 01–05h window, which carries 5.7% of traffic"], ["43 in 1 hour", "frauds arriving together: campaigns, not noise"]].forEach(([b, t], i) => {
   card(s, MX + i * 4.1, 1.5, 3.8, 1.35, HEX.paper, A()); T(s, [{ text: b, options: { fontFace: "Cambria", fontSize: 26, bold: true, color: HEX.red, breakLine: true } }, { text: t, options: { fontSize: 13, color: C.accent5 } }], { x: MX + i * 4.1 + 0.25, y: 1.62, w: 3.35, h: 1.15 }); });
@@ -146,7 +166,7 @@ img(s, FIG("creditcard", "02_fraud_by_amount_hour.png"), MX, 3.1, W - 2 * MX, 3.
 s.addNotes("Three patterns with 95% confidence intervals: card testing at tiny and zero amounts, a night window, and bursts. These are associations, not causes; say that explicitly. They feed recommendation 3.");
 
 /* ===================== 9 · Bursts + behaviour */
-s = content("Fraud arrives in night-time bursts with a distinct behaviour signature", "Data");
+s = content("Fraud arrives in night-time bursts with a distinct behaviour signature", "Data", "PS3", KUM);
 img(s, FIG("creditcard", "04_fraud_over_time.png"), MX, 1.5, W - 2 * MX, 3.4, { name: A() });
 img(s, FIG("creditcard", "03_behaviour_signature.png"), MX, 5.0, W - 2 * MX, 1.9, { name: A() });
 s.addNotes("Top: payments per hour in grey, frauds in orange, night window shaded. Bottom: four anonymised components separate fraud almost on their own (KS statistic up to 0.84); the model uses exactly these.");
@@ -155,10 +175,10 @@ s.addNotes("Top: payments per hour in grey, frauds in orange, night window shade
 sec("Models");
 s = pres.addSlide({ masterName: "SECTION", sectionTitle: "Models" });
 s.addText("How the system decides", { placeholder: "title" });
-s.addText("22 supervised models, 6 label-free detectors, one cost-set rule", { placeholder: "body" });
+s.addText(`22 supervised models, 6 label-free detectors, one cost-set rule\nPresented by ${KUM} (PS4) and ${NAI} (PS5)`, { placeholder: "body" });
 
 /* ===================== 11 · Pipeline */
-s = content("One pipeline: labelled and label-free scores feed a cost-set rule", "Models");
+s = content("One pipeline: labelled and label-free scores feed a cost-set rule", "Models", "PS4", KUM);
 const boxes = [["Audit & split", "dedupe · leakage out · time split 60/20/20"], ["Supervised model", "CatBoost + class weights"], ["Calibrate", "isotonic → risk 0–100"], ["₹ threshold search", "2 cut-offs on validation"], ["Decide", "approve · OTP · block"]];
 boxes.forEach(([t, d], i) => { const x = MX + i * 2.5; card(s, x, 2.2, 2.15, 1.75, i === 4 ? "E7F2EC" : HEX.paper, A());
   T(s, [{ text: t, options: { bold: true, fontSize: 16, color: C.text1, breakLine: true } }, { text: d, options: { fontSize: 13, color: C.accent5 } }], { x: x + 0.18, y: 2.35, w: 1.8, h: 1.5 });
@@ -170,7 +190,7 @@ T(s, [{ text: "Guard-rails enforced in code: ", options: { bold: true, color: C.
 s.addNotes("Walk left to right. Judges look for leakage, so stress the guard-rails: no resampling before the split, nothing tuned on test, a time-aware split. The label-free detector runs alongside as a watch-list.");
 
 /* ===================== 12 · 22 models */
-s = content(`22 models compared; ${FINAL.split(" |")[0]} wins on validation PR-AUC and cost`, "Models");
+s = content(`22 models compared; ${FINAL.split(" |")[0]} wins on validation PR-AUC and cost`, "Models", "PS4", KUM);
 img(s, FIG("creditcard", "05b_all_models_pr_auc_ci.png"), MX, 1.45, 7.6, 5.5, { name: A(), align: "left" });
 T(s, [{ text: "Selection rule, fixed before test", options: { bold: true, fontSize: 17, color: C.text1, breakLine: true } },
   { text: "Within 0.01 of best validation PR-AUC (6 models)", options: { bullet: { type: "number" }, breakLine: true } },
@@ -182,7 +202,7 @@ T(s, [{ text: "Selection rule, fixed before test", options: { bold: true, fontSi
 s.addNotes("Dots are test PR-AUC with 95% bootstrap intervals; bars are validation, which drove the choice. The top models overlap on test, so the choice rests on cost and operability. The ensemble's members were fixed in advance to avoid selection bias.");
 
 /* ===================== 13 · weights vs SMOTE */
-s = content("Class weights beat SMOTE; imbalance handling matters most for linear models", "Models");
+s = content("Class weights beat SMOTE; imbalance handling matters most for linear models", "Models", "PS4", KUM);
 const fam = ["Logistic Regression", "Random Forest", "XGBoost", "LightGBM"], reg = (f, k) => { const r = cmp.find((m) => m.family === f && m.imbalance.startsWith(k) && !m.model.includes("Optuna")); return r ? r.val_pr_auc : 0; };
 s.addChart(pres.charts.BAR, ["none", "class weights", "SMOTE"].map((k) => ({ name: k === "SMOTE" ? "SMOTE (in-pipeline)" : k, labels: ["LogReg", "Random Forest", "XGBoost", "LightGBM"], values: fam.map((f) => reg(f, k)) })),
   { x: MX, y: 1.5, w: 7.6, h: 5.3, barDir: "col", barGrouping: "clustered", chartColors: [HEX.ice, HEX.navy, HEX.gold], ...chartBase("Validation PR-AUC by model family and imbalance handling"), showLegend: true, legendPos: "b", showValue: true, dataLabelFormatCode: "0.000", dataLabelFontSize: 10, valAxisMinVal: 0, valAxisMaxVal: 0.9, valAxisLabelFormatCode: "0.0", objectName: "chart_smote" });
@@ -193,7 +213,7 @@ T(s, [{ text: "LogReg: weights 0.753 · SMOTE 0.705 · none 0.608", options: { b
 s.addNotes("This answers 'does SMOTE beat class weights?' from the brief. Not here. For logistic regression class weights win clearly; for tree ensembles the three are within noise.");
 
 /* ===================== 14 · research models */
-s = content("We tried research-grade models; tuned trees still won", "Models");
+s = content("We tried research-grade models; tuned trees still won", "Models", "PS4", KUM);
 const rm = (n) => cmp.find((r) => r.model.startsWith(n));
 s.addTable([[hdr("Model"), hdr("What it adds"), hdr("Val PR-AUC"), hdr("Test PR-AUC"), hdr("Verdict")],
   ["FT-Transformer (Gorishniy et al., 2021)", "Attention over feature tokens; focal loss", rm("FT").val_pr_auc.toFixed(3), rm("FT").test_pr_auc.toFixed(3), "Below every GBDT"],
@@ -207,7 +227,7 @@ T(s, "Consistent with Grinsztajn et al. (2022): tree ensembles still lead on mid
 s.addNotes("We went beyond the brief's LR, RF, XGBoost: transformers, focal loss, Bayesian tuning, a hybrid and an ensemble. None beat CatBoost on validation, which matches the literature, so the simple model wins and we can say why.");
 
 /* ===================== 15 · anomaly */
-s = content("Without any labels, COPOD finds 59% of fraud in its top 1%", "Models");
+s = content("Without any labels, COPOD finds 59% of fraud in its top 1%", "Models", "PS5", NAI);
 const an = S.anomaly;
 s.addChart(pres.charts.BAR, [{ name: "Fraud in top 1% of scores", labels: [...an.map((a) => a.model), `${FINAL.split(" |")[0]} (supervised)`], values: [...an.map((a) => a.recall_top_1pct), S.sup_vs_anom_top1.sup_top1 / S.sup_vs_anom_top1.fraud_total] }],
   { x: MX, y: 1.5, w: 7.6, h: 5.3, barDir: "bar", chartColors: [HEX.gold, HEX.gold, HEX.gold, HEX.gold, HEX.gold, HEX.navy], ...chartBase("Fraud in top 1% of scores (gold = no labels used)"), showLegend: false, showValue: true, dataLabelFormatCode: "0%", valAxisLabelFormatCode: "0%", valAxisMaxVal: 1, catAxisOrientation: "maxMin", objectName: "chart_anom" });
@@ -219,17 +239,17 @@ s.addNotes("This answers PS5. Detectors fit on training features only; labels us
 sec("Decision");
 s = pres.addSlide({ masterName: "SECTION", sectionTitle: "Decision" });
 s.addText("From score to rupees", { placeholder: "title" });
-s.addText("A cost-based threshold, then three bands", { placeholder: "body" });
+s.addText(`A cost-based threshold, then three bands\nPresented by ${NAI} (PS6) and ${SUM} (PS7)`, { placeholder: "body" });
 
 /* ===================== 17 · cost threshold */
-s = content("The cheapest cut-off is 0.119, not 0.5", "Decision");
+s = content("The cheapest cut-off is 0.119, not 0.5", "Decision", "PS6", NAI);
 img(s, FIG("creditcard", "09_cost_threshold_confusion.png"), MX, 1.45, W - 2 * MX, 4.2, { name: A() });
 [[`${mc.tp} of ${fT}`, "frauds caught on test at 0.119"], [`${mc.fp}`, "genuine payments blocked"], [inr(mc.cost_inr), `test cost vs ${inr(md.cost_inr)} at 0.5`], [`${inr(S.threshold.ci_cost[0])}–${inr(S.threshold.ci_cost[1])}`, "bootstrap 95% CI of that cost"]].forEach(([b, t], i) =>
   T(s, [{ text: b, options: { fontFace: "Cambria", fontSize: 24, bold: true, color: C.text1, breakLine: true } }, { text: t, options: { fontSize: 13, color: C.accent5 } }], { x: MX + i * 3.05, y: 5.85, w: 2.9, h: 1.0, objectName: A() }));
 s.addNotes("Left: expected cost on validation at every threshold; the minimum is 0.119, the square is the 0.5 default. Right: the test confusion matrix in rupees. We chose on validation and scored test once.");
 
 /* ===================== 18 · sensitivity */
-s = content("Wrong cost guesses barely move the decision", "Decision");
+s = content("Wrong cost guesses barely move the decision", "Decision", "PS6", NAI);
 img(s, FIG("creditcard", "10_cost_sensitivity.png"), MX, 1.4, 8.4, 2.75, { name: A(), align: "left" });
 img(s, FIG("creditcard", "10b_otp_sensitivity.png"), MX, 4.2, 8.4, 2.75, { name: A(), align: "left" });
 T(s, [{ text: "₹X × ₹Y: 25 scenarios", options: { bold: true, color: C.text1, breakLine: true } }, { text: "Only four distinct thresholds appear; recall stays between 73% and 86%.", options: { breakLine: true } }, { text: " ", options: { breakLine: true } },
@@ -238,7 +258,7 @@ T(s, [{ text: "₹X × ₹Y: 25 scenarios", options: { bold: true, color: C.text
 s.addNotes("This defends the assumed costs. Top: missed-fraud cost against block cost. Bottom: OTP cost against how much fraud OTP stops. The block decision never moves, and the app recomputes everything live for any official numbers.");
 
 /* ===================== 19 · risk bands */
-s = content("Three bands: block 60, challenge 125, approve the rest", "Decision");
+s = content("Three bands: block 60, challenge 125, approve the rest", "Decision", "PS7", SUM);
 const bandColor = { APPROVE: "E3F2EA", "STEP-UP OTP": "FAEFD2", BLOCK: "F7E0D9" };
 s.addTable([[hdr("Band"), hdr("Rule (model score)"), hdr("Payments"), hdr("Fraud"), hdr("Genuine customers"), hdr("Expected cost")],
   ...["APPROVE", "STEP-UP OTP", "BLOCK"].map((k) => [{ text: k, options: { bold: true, fill: { color: bandColor[k] } } },
@@ -252,7 +272,7 @@ img(s, FIG("creditcard", "11_risk_bands.png"), MX, 4.25, 7.7, 2.65, { name: A(),
 s.addNotes("This is PS7. Two thresholds found by an exact search over validation scores, minimising approve + OTP + block cost, then frozen. Read the table: 60 blocks, 54 of them fraud; 125 OTPs, 119 genuine customers challenged; 14 frauds slip through.");
 
 /* ===================== 20 · money */
-s = content(`Expected cost falls from ${inr(approveAll)} to ${inr(three)} on unseen data`, "Decision");
+s = content(`Expected cost falls from ${inr(approveAll)} to ${inr(three)} on unseen data`, "Decision", "PS7", SUM);
 s.addChart(pres.charts.BAR, [{ name: "Expected cost on test", labels: ["No model (approve all)", "Model @ 0.5", "Cost threshold", "Three-band rule"], values: [approveAll, d05, cthr, three] }],
   { x: MX, y: 1.5, w: 6.2, h: 5.3, barDir: "col", chartColors: [HEX.muted, HEX.ice, HEX.ice, HEX.green], ...chartBase("Expected cost on the test period (observed counts × assumed ₹)"), showLegend: false, showValue: true, dataLabelFormatCode: "₹#,##0", valAxisLabelFormatCode: "₹#,##0", objectName: "chart_cost" });
 img(s, FIG("creditcard", "11b_cost_waterfall.png"), 7.0, 1.6, 5.75, 2.6, { name: A() });
@@ -262,7 +282,7 @@ T(s, [{ text: "Projected (scenario estimate)", options: { bold: true, color: HEX
 s.addNotes("Left: four policies on the same test period. Right: the bridge from approve-everything, where blocking does most of the work. The per-million figure is a projection and is labelled as one, as the brief requires.");
 
 /* ===================== 21 · SHAP */
-s = content("The model relies on the same behaviour signals the data showed", "Decision");
+s = content("The model relies on the same behaviour signals the data showed", "Decision", "PS8", SUM);
 img(s, FIG("creditcard", "12_shap_beeswarm.png"), MX, 1.4, 6.6, 5.5, { name: A(), align: "left" });
 T(s, [{ text: "Low V14 → up to +6 log-odds of fraud", options: { bold: true, color: C.text1, breakLine: true } }, { text: "the strongest single signal", options: { breakLine: true } }, { text: " ", options: { breakLine: true } },
   { text: "High V4, low V12 and V10 push towards fraud", options: { bold: true, color: C.text1, breakLine: true } }, { text: "the same components that separated fraud in the EDA", options: { breakLine: true } }, { text: " ", options: { breakLine: true } },
@@ -274,10 +294,10 @@ s.addNotes("SHAP agrees with the EDA, so the model learned real behaviour, not a
 sec("Action");
 s = pres.addSlide({ masterName: "SECTION", sectionTitle: "Action" });
 s.addText("Three findings, three actions", { placeholder: "title" });
-s.addText("Each tied to observed evidence; projections labelled", { placeholder: "body" });
+s.addText(`Each tied to observed evidence; projections labelled\nPresented by ${SUM} (PS8)`, { placeholder: "body" });
 
 /* ===================== 23 · actions */
-s = content("Three actions, each tied to observed evidence", "Action");
+s = content("Three actions, each tied to observed evidence", "Action", "PS8", SUM);
 [["1 · This quarter", "Retire 0.5; deploy the three-band rule", `${inr(three)} vs ${inr(d05)} on test; blocks are 90% fraud`, "Shadow-run 2–4 weeks, then go live; re-fit thresholds monthly from the cost curve", HEX.green],
  ["2 · Before any UPI model", "Fix UPI data, then model it", "22 models at chance; no IDs; a leakage field", "Log account and device IDs and dated labels; COPOD watch-list meanwhile; random holdout", HEX.navy],
  ["3 · Next sprint", "Target card testing and bursts", "≤ 1.51 amounts hold 37% of fraud; 01–05h = 23% of fraud in 5.7% of traffic", "Velocity limits on micro-authorisations; burst alerts; night staffing; A/B test first", HEX.amber]].forEach(([p, t, e, a, col], i) => {
@@ -289,15 +309,15 @@ s = content("Three actions, each tied to observed evidence", "Action");
 s.addNotes("Exactly three, each linked to evidence. One has the largest observed value. Two unlocks UPI at all. Three is operational and must be A/B tested, because the patterns are associations.");
 
 /* ===================== 24 · demo */
-s = content("Live demo: FraudGuard on the web, in both modes", "Action");
+s = content("Live demo: FraudGuard on the web, in both modes", "Action", "Demo", SUM);
 img(s, SHOT("app_score_cc.png"), MX, 1.45, 7.9, 4.95, { name: A(), align: "left", alt: "FraudGuard web app scoring a credit-card payment" });
 img(s, SHOT("app_score_upi.png"), 8.75, 1.45, 4.0, 2.5, { name: A(), alt: "UPI mode with the no-signal policy" });
 img(s, SHOT("app_policy.png"), 8.75, 4.05, 4.0, 2.5, { name: A(), alt: "Policy page re-optimising thresholds" });
-T(s, "[Netlify URL] · Score · Batch CSV · Policy (enter official ₹ costs) · Evidence · sign-in with saved scorings and audit log (Supabase)", { x: MX, y: 6.55, w: W - 2 * MX, h: 0.4, fontSize: 13, color: C.accent5 });
-s.addNotes("Switch to the live app. Load a test fraud: BLOCK with the reasons. Load a genuine: APPROVE. Edit V14 down and watch the risk climb. Open Policy and type a different missed-fraud cost to show the thresholds re-optimise. Switch to UPI mode to show the no-signal banner.");
+T(s, [{ text: "calibofraudguard.netlify.app", options: { bold: true, color: HEX.navy, hyperlink: { url: LIVE } } }, { text: "  ·  sign in · Score · Batch CSV · Policy (official ₹ costs) · Evidence · History and audit log" }], { x: MX, y: 6.5, w: W - 2 * MX, h: 0.4, fontSize: 13, color: C.accent5 });
+s.addNotes("Switch to the live app at calibofraudguard.netlify.app (sign in first). Load a test fraud: BLOCK with the reasons. Load a genuine: APPROVE. Edit V14 down and watch the risk climb. Open Policy and type a different missed-fraud cost to show the thresholds re-optimise. Switch to UPI mode to show the no-signal banner.");
 
 /* ===================== 25 · special points + limitations */
-s = content("Special points and limitations", "Action");
+s = content("Special points and limitations", "Action", "PS8", SUM);
 [["Confidentiality", ["Card features are PCA-anonymised by the data owner", "UPI file has no personal identifiers", "App scores in the browser; saves are row-level-secured per user"]],
  ["Compliance for rollout", ["DPDP Act 2023: consent, purpose, retention", "RBI fraud-reporting and customer-liability rules", "An appeal path for blocked customers"]],
  ["Limitations", ["~2 days of 2013 card data; 74 test frauds → wide CIs", "Amount currency not stated; costs per event", "Assumed ₹ costs → savings are scenarios", "Blocked fraud is never confirmed → keep a random holdout"]]].forEach(([t, items], i) => {
@@ -310,8 +330,10 @@ s.addNotes("Close the analysis on honesty: what the data can and can't support, 
 s = pres.addSlide({ masterName: "DARK", sectionTitle: "Action" });
 s.addText("From 99.87% accuracy to rupees saved", { placeholder: "title" });
 s.addText("Recall, precision and PR-AUC instead of accuracy · a cost-based threshold instead of 0.5 · three bands instead of one score · a label-free watch-list for unseen fraud · a fair comparison of 22 models · three prioritised actions", { placeholder: "body" });
-T(s, "Questions?", { x: MX, y: 6.1, w: 6, h: 0.6, fontFace: "Cambria", fontSize: 28, bold: true, color: C.accent1, objectName: A() });
-s.addNotes("Recap the brief's 'from → to' table in one line and open for questions. Likely questions: why not UPI (slide 7), what if costs are wrong (slide 18), does SMOTE help (slide 13), how was leakage prevented (slide 11).");
+T(s, "Questions?", { x: MX, y: 6.1, w: 3, h: 0.6, fontFace: "Cambria", fontSize: 28, bold: true, color: C.accent1, objectName: A() });
+T(s, [{ text: TEAM, options: { bold: true, color: HEX.white, breakLine: true } }, { text: `${VAR} · ${KUM} · ${NAI} · ${SUM}`, options: { color: C.accent6, breakLine: true } }, { text: "calibofraudguard.netlify.app", options: { color: C.accent1, hyperlink: { url: LIVE } } }],
+  { x: W - 7.1, y: 5.85, w: 6.5, h: 1.1, fontSize: 14, align: "right", objectName: A() });
+s.addNotes("Recap the brief's 'from → to' table in one line and open for questions. Likely questions: why not UPI (slide 8), what if costs are wrong (slide 19), does SMOTE help (slide 14), how was leakage prevented (slide 12).");
 
 (async () => {
   const out = path.join(ROOT, "docs/FraudGuard_Presentation.pptx");
