@@ -53,8 +53,10 @@ import matplotlib.ticker as mticker
 from IPython.display import display, Markdown
 import joblib
 
-ROOT = os.environ.get("FG_ROOT", os.path.abspath(os.path.join(os.getcwd(), "..")))
-sys.path.insert(0, os.path.join(ROOT, "src"))
+# project root = the folder holding src/ (repo) or fraudguard_lib.py (flat copy); works from the repo root or a subfolder
+_cands = [os.getcwd(), os.path.dirname(os.getcwd())]
+ROOT = os.environ.get("FG_ROOT") or next((p for p in _cands if os.path.exists(os.path.join(p, "src", "fraudguard_lib.py")) or os.path.exists(os.path.join(p, "fraudguard_lib.py"))), os.getcwd())
+sys.path[:0] = [os.path.join(ROOT, "src"), ROOT]
 import fraudguard_lib as L
 
 DATASET = os.environ.get("FG_DATASET", "creditcard")      # "creditcard" | "upi"

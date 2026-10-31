@@ -3,7 +3,7 @@ const fs = require("fs"), path = require("path");
 const pptxgen = require("pptxgenjs");
 const SK = "/root/.claude/skills/synced/21f66b5d-6ebb-47b1-8886-6ec218504b4e_80327f49-d0d7-4365-a95e-465d7a6ce699/pptx";
 const { applyTheme } = require(SK + "/scripts/apply_theme.js");
-const ROOT = path.resolve(__dirname, "../..");
+const ROOT = path.resolve(__dirname, "..");
 const J = (f) => JSON.parse(fs.readFileSync(f, "utf8").replace(/\bNaN\b/g, "null").replace(/-?Infinity\b/g, "null"));
 const S = J(path.join(ROOT, "outputs/summary_creditcard.json")), U = J(path.join(ROOT, "outputs/summary_upi.json"));
 const FIG = (d, f) => path.join(ROOT, "outputs/figures", d, f), SHOT = (f) => path.join(__dirname, "shots", f);
@@ -336,7 +336,7 @@ T(s, [{ text: TEAM, options: { bold: true, color: HEX.white, breakLine: true } }
 s.addNotes("Recap the brief's 'from → to' table in one line and open for questions. Likely questions: why not UPI (slide 8), what if costs are wrong (slide 19), does SMOTE help (slide 14), how was leakage prevented (slide 12).");
 
 (async () => {
-  const out = path.join(ROOT, "docs/FraudGuard_Presentation.pptx");
+  const out = path.join(ROOT, "FraudGuard_Presentation.pptx");
   await pres.writeFile({ fileName: out });
   await applyTheme(out, THEME);
   console.log("wrote", out, "slides:", pres.slides.length);

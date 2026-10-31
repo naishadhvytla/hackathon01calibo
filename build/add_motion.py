@@ -2,7 +2,7 @@
 
 Shapes whose name starts with "anim_" (and charts named "chart_*") fade in automatically,
 one after another, when the slide opens. Section dividers push up; content slides fade.
-Run after build_deck.js:  python3 add_motion.py ../FraudGuard_Presentation.pptx
+Run after build_deck.js:  python3 add_motion.py ../FraudGuard_Presentation.pptx   (from build/)
 """
 import re, sys, zipfile, shutil, os
 

@@ -2,8 +2,8 @@
 const fs = require("fs"), path = require("path");
 const L = require("./lib");
 const { LIVE, P, H1, H2, Bul, Num, Caption, Callout, Img, Tbl, makeDoc, save, inr, inrFull, pct, csv, PORTRAIT_W: PW, LANDSCAPE_W: LW, PageBreak } = L;
-const ROOT = path.resolve(__dirname, "../..");
-const OUT = path.join(ROOT, "docs");
+const ROOT = path.resolve(__dirname, "..");
+const OUT = ROOT;
 const J = (f) => JSON.parse(fs.readFileSync(f, "utf8").replace(/\bNaN\b/g, "null").replace(/-?Infinity\b/g, "null"));
 const S = J(path.join(ROOT, "outputs/summary_creditcard.json"));
 const U = J(path.join(ROOT, "outputs/summary_upi.json"));
@@ -102,7 +102,7 @@ async function modelComparison() {
       Caption("Figure 8. UPI: every model's test PR-AUC sits on the random line."),
       Img(F("upi", "07_pr_curves.png"), 6.4),
       Caption("Figure 9. UPI precision–recall curves (y-axis zoomed to 0–2%)."),
-      P("Reproduce with `notebooks/fraudguard_pipeline.ipynb` (seed 42). Tables: `outputs/tables/{creditcard,upi}/model_comparison.csv` and `model_pr_auc_ci.csv`. A from-scratch rerun reproduces every number in this document exactly."),
+      P("Reproduce with `fraudguard_pipeline.ipynb` (seed 42). Tables: `outputs/tables/{creditcard,upi}/model_comparison.csv` and `model_pr_auc_ci.csv`. A from-scratch rerun reproduces every number in this document exactly."),
     ] },
   ]);
   await save(doc, path.join(OUT, "FraudGuard_Model_Comparison.docx"));

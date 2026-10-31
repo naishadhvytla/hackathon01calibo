@@ -38,10 +38,10 @@ The rupee costs are stated assumptions (missed fraud ₹5,000, false block ₹30
 ### Option A — Google Colab (recommended)
 1. Upload this repository folder to Google Drive, e.g. `MyDrive/fraudguard/`.
 2. Put `creditcard.csv` (or `creditcard.zip`) and `upi_transactions 2024.csv` (or its zip) in `fraudguard/data/`. Zips are unpacked automatically.
-3. Open `notebooks/fraudguard_pipeline.ipynb` in Colab and run this first cell:
+3. Open `fraudguard_pipeline.ipynb` (repository root) in Colab and run this first cell:
    ```python
    from google.colab import drive; drive.mount('/content/drive')
-   %cd /content/drive/MyDrive/fraudguard/notebooks
+   %cd /content/drive/MyDrive/fraudguard
    !pip -q install xgboost lightgbm catboost shap imbalanced-learn optuna pyod
    ```
 4. **Runtime → Run all.** This runs the credit-card dataset. For the UPI control, set `DATASET = "upi"` in the setup cell and run all again.
@@ -52,7 +52,6 @@ Runtime is about 17 minutes from scratch on a 2-core CPU, and faster on a Colab 
 ```bash
 python -m venv .venv && source .venv/bin/activate      # Python 3.11+
 pip install -r requirements.txt
-cd notebooks
 FG_DATASET=creditcard jupyter nbconvert --to notebook --execute fraudguard_pipeline.ipynb --output 01_creditcard_executed.ipynb
 FG_DATASET=upi        jupyter nbconvert --to notebook --execute fraudguard_pipeline.ipynb --output 02_upi_executed.ipynb
 ```
@@ -78,22 +77,21 @@ The local Streamlit demo still works: `streamlit run app/streamlit_app.py`.
 ## 2 · Repository layout
 ```
 fraudguard/
-├── notebooks/
-│   ├── fraudguard_pipeline.ipynb      ← single source pipeline (DATASET = creditcard | upi)
-│   ├── fraudguard_pipeline.py         ← same notebook in jupytext percent format
-│   ├── 01_creditcard_executed.ipynb   ← executed run with every output (primary)
-│   └── 02_upi_executed.ipynb          ← executed run with every output (negative control)
+├── fraudguard_pipeline.ipynb          ← single source pipeline (DATASET = creditcard | upi)
+├── fraudguard_pipeline.py             ← same notebook in jupytext percent format
+├── 01_creditcard_executed.ipynb       ← executed run with every output (primary)
+├── 02_upi_executed.ipynb              ← executed run with every output (negative control)
+├── FraudGuard_Business_Report.docx
+├── FraudGuard_Model_Comparison.docx
+├── FraudGuard_Cost_Analysis_and_Risk_Rule.docx
+├── FraudGuard_Presentation.pptx
+├── FraudGuard_README.docx
+├── ARCHITECTURE.md                    ← system diagram + 6 architecture decision records
 ├── src/fraudguard_lib.py              ← loaders, audit, split, cost model, band search, models
 ├── web/                               ← web app for Netlify (HTML, JS, models, config.js)
 ├── supabase/schema.sql                ← tables, row-level security, limits, storage bucket
 ├── app/streamlit_app.py               ← local Streamlit demo
-├── docs/
-│   ├── ARCHITECTURE.md                ← system diagram + 6 architecture decision records
-│   ├── FraudGuard_Business_Report.docx
-│   ├── FraudGuard_Model_Comparison.docx
-│   ├── FraudGuard_Cost_Analysis_and_Risk_Rule.docx
-│   ├── FraudGuard_README.docx
-│   └── FraudGuard_Presentation.pptx
+├── build/                             ← scripts that rebuild the .docx / .pptx from outputs/
 ├── outputs/
 │   ├── figures/{creditcard,upi}/      ← every chart
 │   ├── tables/{creditcard,upi}/       ← comparison, CIs, anomaly, risk bands, audit (CSV)
@@ -152,7 +150,7 @@ fraudguard/
 
 ## 7 · Rebuilding `.ipynb` from the `.py` source
 ```bash
-pip install jupytext && jupytext --to ipynb notebooks/fraudguard_pipeline.py
+pip install jupytext && jupytext --to ipynb fraudguard_pipeline.py
 ```
 
 ## 8 · End-goal checklist (problem statement §7, §12, §13, §14)
@@ -167,12 +165,12 @@ pip install jupytext && jupytext --to ipynb notebooks/fraudguard_pipeline.py
 | Precision–recall curve and cost-versus-threshold chart | `07_pr_curves.png`, `09_cost_threshold_confusion.png` · Cost Analysis doc |
 | Risk-score rule with approve / step-up OTP / block bands, counts and costs per band | Notebook §8 · Cost Analysis doc §5 · `tables/creditcard/risk_bands_test.csv` · app Policy page |
 | Three evidence-backed findings, three prioritised recommendations, limitations | Business Report §9–§11 · deck slides 24, 26 |
-| Source code / notebook, runnable, fixed seed | `notebooks/` (seed 42; from-scratch rerun reproduces every number) |
-| Model comparison table with final selection reasoning | `docs/FraudGuard_Model_Comparison.docx` · `tables/*/model_comparison.csv` |
-| Cost analysis with ₹ assumptions | `docs/FraudGuard_Cost_Analysis_and_Risk_Rule.docx` (no official ₹ values were published; stated assumptions are used, and the Policy page and config cell recompute for any official values) |
-| Business report 4–6 pages | `docs/FraudGuard_Business_Report.docx` (5 pages) |
-| Presentation 5–10 min incl. accuracy-trap slide | `docs/FraudGuard_Presentation.pptx` (27 slides incl. a team slide and 5 section dividers; about 10 minutes at ~2 minutes per member plus the demo; presenter named on every slide; speaker notes, transitions and animations) |
-| README: setup, dependencies, assumptions, execution | this file · `docs/FraudGuard_README.docx` |
+| Source code / notebook, runnable, fixed seed | `fraudguard_pipeline.ipynb` + the two executed runs (seed 42; from-scratch rerun reproduces every number) |
+| Model comparison table with final selection reasoning | `FraudGuard_Model_Comparison.docx` · `tables/*/model_comparison.csv` |
+| Cost analysis with ₹ assumptions | `FraudGuard_Cost_Analysis_and_Risk_Rule.docx` (no official ₹ values were published; stated assumptions are used, and the Policy page and config cell recompute for any official values) |
+| Business report 4–6 pages | `FraudGuard_Business_Report.docx` (6 pages) |
+| Presentation 5–10 min incl. accuracy-trap slide | `FraudGuard_Presentation.pptx` (27 slides incl. a team slide and 5 section dividers; about 10 minutes at ~2 minutes per member plus the demo; presenter named on every slide; speaker notes, transitions and animations) |
+| README: setup, dependencies, assumptions, execution | this file · `FraudGuard_README.docx` |
 | Demo | Live web app <https://calibofraudguard.netlify.app/> (`web/`, Netlify + Supabase) · Streamlit (`app/`) |
 | Boundaries: no accuracy-only reporting, no resampling before the split, no leakage columns, no tuning on test, no causal claims, no external data, projections labelled | §5 above; enforced in code |
 
