@@ -132,6 +132,24 @@ section.block { margin-top: 38px; }
 .drop { border: 2px dashed var(--line); border-radius: 12px; padding: 26px; text-align: center; background: var(--card); }
 .drop.over { border-color: var(--focus); }
 .auth { max-width: 420px; margin: 20px auto; }
+
+/* sign-in gate: only the brand shows in the top bar until the user signs in */
+body.gated .mode, body.gated .nav, body.gated .banner { display: none !important; }
+.nav-user { color: var(--muted); font-size: .88rem; max-width: 22ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 14px; border-left: 1px solid var(--line); }
+.gate { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 420px); gap: clamp(24px, 5vw, 64px); align-items: center; min-height: min(70vh, 640px); }
+.gate > * { min-width: 0; }
+@media (max-width: 860px) { .gate { grid-template-columns: 1fr; min-height: 0; } .gate-card { order: -1; } }
+.eyebrow { font-size: .8rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.gate-points { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 10px; color: var(--text); }
+.gate-points .pill { min-width: 104px; text-align: center; margin-right: 10px; }
+.gate-card { width: 100%; }
+.gate-card h2 { margin-top: 6px; }
+.gate-card input { width: 100%; }
+.gate-card .btn { width: 100%; justify-content: center; padding-block: 12px; }
+.gate-tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: var(--paper); }
+.gate-tabs a { text-align: center; text-decoration: none; font-weight: 600; font-size: .92rem; color: var(--muted); padding: 7px 10px; border-radius: 999px; }
+.gate-tabs a[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+#authmsg:empty { display: none; }
 .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 10px; z-index: 20; font-weight: 600; }
 .foot { border-top: 1px solid var(--line); padding-block: 22px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); color: var(--muted); font-size: .86rem; background: var(--card); }
 .foot p { max-width: none; margin: 0 0 6px; }

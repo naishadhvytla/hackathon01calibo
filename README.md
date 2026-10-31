@@ -50,13 +50,13 @@ FG_DATASET=upi        jupyter nbconvert --to notebook --execute fraudguard_pipel
 The app in `web/` is a static site with no build step. Scoring, exact SHAP explanations, batch CSV scoring and the policy lab all run in the browser, from the exported CatBoost models in `web/models/`.
 
 1. **Netlify:** *Add new site → Import from Git →* this repo. `netlify.toml` already sets the publish directory to `web`, with no build command.
-2. **Supabase** (optional, enables sign-in and saving):
+2. **Supabase** (optional; adds the sign-in / sign-up page in front of the app, plus saving):
    1. Create a project.
    2. *SQL Editor →* paste and run `supabase/schema.sql`. This creates the tables, row-level security, the 50-scoring and 5-run limits, and a private `batches` storage bucket.
-   3. *Authentication → Providers:* enable Email, and Google if you want it.
+   3. *Authentication → Providers:* keep Email enabled (the app uses email + password only).
    4. *Authentication → URL configuration:* add your Netlify URL as Site URL and as a redirect URL.
-   5. Copy the *Project URL* and the *anon public key* into `web/config.js`, then commit. The anon key is designed to be public; row-level security keeps each user's rows private.
-3. Without keys, the app runs in guest mode. Everything works except saving.
+   5. Copy the *Project URL* (the **Connect** button, or `https://<project-id>.supabase.co`) and the *anon public key* (*Project Settings → API Keys → Legacy API keys*) into `web/config.js`, then commit. The anon key is designed to be public; row-level security keeps each user's rows private.
+3. With keys, visitors see the sign-in / create-account page first and reach the app after signing in. Without keys, the app opens straight away in guest mode and everything works except saving.
 
 The local Streamlit demo still works: `streamlit run app/streamlit_app.py`.
 
