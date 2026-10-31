@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>FraudGuard</title>
+<meta name="description" content="Score a card or UPI payment, see approve / step-up OTP / block with the reasons, and the rupee cost behind every threshold.">
+<meta name="theme-color" content="#14284B">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2314284B'/%3E%3Cpath d='M9 22V10h11M9 16h8' stroke='%23F2F4F7' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='23' cy='21' r='3' fill='%23D8A21B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <a class="brand" href="#score" aria-label="FraudGuard home"><span class="brand-mark" aria-hidden="true"></span>FraudGuard</a>
+  <div class="mode" role="tablist" aria-label="Dataset mode">
+    <button role="tab" id="mode-cc" data-mode="creditcard" aria-selected="true">Credit card</button>
+    <button role="tab" id="mode-upi" data-mode="upi" aria-selected="false">UPI</button>
+  </div>
+  <nav class="nav" aria-label="Main">
+    <a href="#score" data-route="score">Score</a>
+    <a href="#batch" data-route="batch">Batch</a>
+    <a href="#policy" data-route="policy">Policy</a>
+    <a href="#evidence" data-route="evidence">Evidence</a>
+    <a href="#history" data-route="history" class="auth-only">History</a>
+    <a href="#login" id="nav-login" class="guest-only">Sign in</a>
+    <button id="nav-logout" class="link auth-only" type="button">Sign out</button>
+  </nav>
+</header>
+
+<div id="banner" class="banner" hidden></div>
+<main id="main" tabindex="-1"><p class="loading">Loading models…</p></main>
+
+<footer class="foot">
+  <p>FraudGuard · KLU + Path-3 ML-02 hackathon. Models: CatBoost (credit card), CatBoost at chance (UPI control). Scoring and explanations run in your browser; nothing is sent unless you sign in and save.</p>
+  <p>Rupee costs are stated assumptions and every saving is a scenario estimate. Data: <a href="https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud" rel="noopener" target="_blank">ULB credit card fraud</a> and the organiser-supplied UPI Transactions 2024 file.</p>
+</footer>
+
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/model.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

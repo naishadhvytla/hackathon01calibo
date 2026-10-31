@@ -1,0 +1,1392 @@
+{
+ "dataset": "creditcard",
+ "seed": 42,
+ "costs": {
+  "X": 5000,
+  "Y": 300,
+  "Z": 15,
+  "otp_stop_rate": 0.7
+ },
+ "split": [
+  {
+   "split": "train",
+   "rows": 170235,
+   "frauds": 342,
+   "fraud_rate_pct": 0.2009,
+   "time_from": 0.0,
+   "time_to": 120392.0
+  },
+  {
+   "split": "validation",
+   "rows": 56745,
+   "frauds": 57,
+   "fraud_rate_pct": 0.1004,
+   "time_from": 120393.0,
+   "time_to": 145233.0
+  },
+  {
+   "split": "test",
+   "rows": 56746,
+   "frauds": 74,
+   "fraud_rate_pct": 0.1304,
+   "time_from": 145234.0,
+   "time_to": 172792.0
+  }
+ ],
+ "fraud_rate_pct": 0.1667101358352777,
+ "n_fraud": 473,
+ "n": 283726,
+ "do_nothing_test": {
+  "accuracy": 0.9986959433264019,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1": 0.0,
+  "pr_auc": 0.0013040566735981391,
+  "roc_auc": 0.5,
+  "tp": 0.0,
+  "fp": 0.0,
+  "fn": 74.0,
+  "tn": 56672.0,
+  "cost_inr": 370000.0
+ },
+ "eda": {
+  "night_01_05": {
+   "share_txns": 5.707971775586305,
+   "share_fraud": 23.044397463002113,
+   "rate": 0.6730472368014819,
+   "rate_day": 0.13605899877023597
+  },
+  "amount_bands": [
+   {
+    "amount_band": "(-0.001, 1.51]",
+    "txns": 35654,
+    "frauds": 177,
+    "fraud_rate_pct": 0.4964379873226005,
+    "ci_lo": 0.42862571415712436,
+    "ci_hi": 0.5749167997565614
+   },
+   {
+    "amount_band": "(1.51, 5.6]",
+    "txns": 35286,
+    "frauds": 36,
+    "fraud_rate_pct": 0.10202346539704132,
+    "ci_lo": 0.07370644911708102,
+    "ci_hi": 0.1412041216348149
+   },
+   {
+    "amount_band": "(5.6, 11.5]",
+    "txns": 35503,
+    "frauds": 30,
+    "fraud_rate_pct": 0.08449990141678168,
+    "ci_lo": 0.05919822475847422,
+    "ci_hi": 0.12060261677849878
+   },
+   {
+    "amount_band": "(11.5, 22.0]",
+    "txns": 35532,
+    "frauds": 17,
+    "fraud_rate_pct": 0.04784419678036699,
+    "ci_lo": 0.029874788308963705,
+    "ci_hi": 0.07661375479620365
+   },
+   {
+    "amount_band": "(22.0, 41.0]",
+    "txns": 35407,
+    "frauds": 24,
+    "fraud_rate_pct": 0.06778320671053746,
+    "ci_lo": 0.04555598093014442,
+    "ci_hi": 0.10084438025189535
+   },
+   {
+    "amount_band": "(41.0, 77.51]",
+    "txns": 35413,
+    "frauds": 21,
+    "fraud_rate_pct": 0.05930025696778019,
+    "ci_lo": 0.038790775022004204,
+    "ci_hi": 0.0906436915454494
+   },
+   {
+    "amount_band": "(77.51, 165.451]",
+    "txns": 35465,
+    "frauds": 75,
+    "fraud_rate_pct": 0.21147610320033836,
+    "ci_lo": 0.16875716595267645,
+    "ci_hi": 0.2649801456148939
+   },
+   {
+    "amount_band": "(165.451, 25691.16]",
+    "txns": 35466,
+    "frauds": 93,
+    "fraud_rate_pct": 0.26222297411605483,
+    "ci_lo": 0.2141158963358432,
+    "ci_hi": 0.3211038606083209
+   }
+  ],
+  "amount_median": {
+   "0": 22.0,
+   "1": 9.82
+  },
+  "amount_zero": [
+   {
+    "amount_zero": 0,
+    "txns": 281918,
+    "frauds": 448,
+    "fraud_rate_pct": 0.15891145652281868,
+    "ci_lo": 0.14487132819802168,
+    "ci_hi": 0.17430990121403814,
+    "share_of_fraud_pct": 94.71458773784356
+   },
+   {
+    "amount_zero": 1,
+    "txns": 1808,
+    "frauds": 25,
+    "fraud_rate_pct": 1.3827433628318584,
+    "ci_lo": 0.9383296911198843,
+    "ci_hi": 2.0333208107782954,
+    "share_of_fraud_pct": 5.2854122621564485
+   }
+  ],
+  "ks_top": {
+   "V14": 0.838,
+   "V10": 0.797,
+   "V12": 0.777,
+   "V4": 0.761,
+   "V11": 0.747,
+   "V17": 0.736
+  }
+ },
+ "rules": {
+  "Rule | night & amount>p95": "FLAG if hour \u2208 [0,5] AND amount > 360.00",
+  "Rule | learned 2-split tree": "|--- V14 <= -1.63\n|   |--- V10 <= -1.88\n|   |   |--- class: 1\n|   |--- V10 >  -1.88\n|   |   |--- class: 1\n|--- V14 >  -1.63\n|   |--- V4 <= 1.66\n|   |   |--- class: 0\n|   |--- V4 >  1.66\n|   |   |--- class: 0\n"
+ },
+ "optuna": {
+  "params": {
+   "n_estimators": 300,
+   "learning_rate": 0.027451173054295157,
+   "num_leaves": 12,
+   "min_child_samples": 165,
+   "colsample_bytree": 0.40482404392189436,
+   "subsample": 0.9617476746602377,
+   "reg_lambda": 7.0421341981252095,
+   "scale_pos_weight": 2.573654603539298,
+   "subsample_freq": 1
+  },
+  "inner_cv_pr_auc": 0.7995564674515322
+ },
+ "anomaly": [
+  {
+   "model": "COPOD",
+   "kind": "unsupervised",
+   "test_pr_auc": 0.0862,
+   "test_roc_auc": 0.9458,
+   "recall_top_0_5pct": 0.4865,
+   "recall_top_1pct": 0.5946,
+   "precision_top_1pct": 0.0775,
+   "recall_top_5pct": 0.8378
+  },
+  {
+   "model": "ECOD",
+   "kind": "unsupervised",
+   "test_pr_auc": 0.0682,
+   "test_roc_auc": 0.9465,
+   "recall_top_0_5pct": 0.4054,
+   "recall_top_1pct": 0.5811,
+   "precision_top_1pct": 0.0757,
+   "recall_top_5pct": 0.8378
+  },
+  {
+   "model": "Isolation Forest",
+   "kind": "unsupervised",
+   "test_pr_auc": 0.0489,
+   "test_roc_auc": 0.9561,
+   "recall_top_0_5pct": 0.2297,
+   "recall_top_1pct": 0.527,
+   "precision_top_1pct": 0.0687,
+   "recall_top_5pct": 0.8378
+  },
+  {
+   "model": "LOF (novelty)",
+   "kind": "unsupervised",
+   "test_pr_auc": 0.0419,
+   "test_roc_auc": 0.5774,
+   "recall_top_0_5pct": 0.2838,
+   "recall_top_1pct": 0.2973,
+   "precision_top_1pct": 0.0387,
+   "recall_top_5pct": 0.4054
+  },
+  {
+   "model": "Autoencoder",
+   "kind": "unsupervised",
+   "test_pr_auc": 0.0336,
+   "test_roc_auc": 0.9204,
+   "recall_top_0_5pct": 0.2432,
+   "recall_top_1pct": 0.4054,
+   "precision_top_1pct": 0.0528,
+   "recall_top_5pct": 0.6351
+  }
+ ],
+ "dbscan": {
+  "flagged_pct": 0.58,
+  "fraud_in_sample": 12.0,
+  "fraud_caught": 6.0,
+  "recall": 0.5,
+  "precision": 0.10344827586206896
+ },
+ "comparison": [
+  {
+   "model": "CatBoost | class weights",
+   "family": "CatBoost",
+   "imbalance": "class weights (\u221abalanced)",
+   "val_pr_auc": 0.78443,
+   "val_cost": 66300,
+   "val_thr": 0.11851,
+   "test_pr_auc": 0.79947,
+   "test_roc_auc": 0.96841,
+   "test_precision": 0.725,
+   "test_recall": 0.78378,
+   "test_f1": 0.75325,
+   "test_cost": 86600,
+   "test_recall_at_0_5": 0.75676,
+   "test_cost_at_0_5": 92700,
+   "fit_s": 17.49157,
+   "ms_per_txn": 0.00055
+  },
+  {
+   "model": "XGBoost | class weights",
+   "family": "XGBoost",
+   "imbalance": "class weights",
+   "val_pr_auc": 0.78288,
+   "val_cost": 70900,
+   "val_thr": 0.94663,
+   "test_pr_auc": 0.78985,
+   "test_roc_auc": 0.97575,
+   "test_precision": 0.91667,
+   "test_recall": 0.74324,
+   "test_f1": 0.8209,
+   "test_cost": 96500,
+   "test_recall_at_0_5": 0.75676,
+   "test_cost_at_0_5": 93300,
+   "fit_s": 4.37476,
+   "ms_per_txn": 0.00252
+  },
+  {
+   "model": "Ensemble | soft-vote CatBoost+XGB+LGBM",
+   "family": "Ensemble",
+   "imbalance": "inherits",
+   "val_pr_auc": 0.7808,
+   "val_cost": 69000,
+   "val_thr": 0.1525,
+   "test_pr_auc": 0.79928,
+   "test_roc_auc": 0.9828,
+   "test_precision": 0.65169,
+   "test_recall": 0.78378,
+   "test_f1": 0.71166,
+   "test_cost": 89300,
+   "test_recall_at_0_5": 0.75676,
+   "test_cost_at_0_5": 92100,
+   "fit_s": 24.78658,
+   "ms_per_txn": 0.01138
+  },
+  {
+   "model": "LightGBM | Optuna-tuned",
+   "family": "LightGBM",
+   "imbalance": "tuned scale_pos_weight",
+   "val_pr_auc": 0.77704,
+   "val_cost": 67500,
+   "val_thr": 0.24669,
+   "test_pr_auc": 0.80068,
+   "test_roc_auc": 0.98423,
+   "test_precision": 0.71605,
+   "test_recall": 0.78378,
+   "test_f1": 0.74839,
+   "test_cost": 86900,
+   "test_recall_at_0_5": 0.74324,
+   "test_cost_at_0_5": 97700,
+   "fit_s": 2.92025,
+   "ms_per_txn": 0.00831
+  },
+  {
+   "model": "XGBoost | none",
+   "family": "XGBoost",
+   "imbalance": "none",
+   "val_pr_auc": 0.77546,
+   "val_cost": 70200,
+   "val_thr": 0.0376,
+   "test_pr_auc": 0.79095,
+   "test_roc_auc": 0.97903,
+   "test_precision": 0.58416,
+   "test_recall": 0.7973,
+   "test_f1": 0.67429,
+   "test_cost": 87600,
+   "test_recall_at_0_5": 0.75676,
+   "test_cost_at_0_5": 91800,
+   "fit_s": 4.65547,
+   "ms_per_txn": 0.0027
+  },
+  {
+   "model": "Hybrid | tuned LightGBM + anomaly scores",
+   "family": "Hybrid",
+   "imbalance": "tuned scale_pos_weight",
+   "val_pr_auc": 0.77503,
+   "val_cost": 67500,
+   "val_thr": 0.19034,
+   "test_pr_auc": 0.78857,
+   "test_roc_auc": 0.98324,
+   "test_precision": 0.7037,
+   "test_recall": 0.77027,
+   "test_f1": 0.73548,
+   "test_cost": 92200,
+   "test_recall_at_0_5": 0.72973,
+   "test_cost_at_0_5": 101500,
+   "fit_s": 3.16772,
+   "ms_per_txn": 0.02811
+  },
+  {
+   "model": "LightGBM | SMOTE",
+   "family": "LightGBM",
+   "imbalance": "SMOTE (in-fold)",
+   "val_pr_auc": 0.77301,
+   "val_cost": 68700,
+   "val_thr": 0.15551,
+   "test_pr_auc": 0.77838,
+   "test_roc_auc": 0.97789,
+   "test_precision": 0.53211,
+   "test_recall": 0.78378,
+   "test_f1": 0.63388,
+   "test_cost": 95300,
+   "test_recall_at_0_5": 0.74324,
+   "test_cost_at_0_5": 98300,
+   "fit_s": 6.32481,
+   "ms_per_txn": 0.01496
+  },
+  {
+   "model": "LightGBM | class weights",
+   "family": "LightGBM",
+   "imbalance": "class weights (\u221aratio)",
+   "val_pr_auc": 0.77114,
+   "val_cost": 72600,
+   "val_thr": 0.02687,
+   "test_pr_auc": 0.79395,
+   "test_roc_auc": 0.98792,
+   "test_precision": 0.58416,
+   "test_recall": 0.7973,
+   "test_f1": 0.67429,
+   "test_cost": 87600,
+   "test_recall_at_0_5": 0.72973,
+   "test_cost_at_0_5": 104800,
+   "fit_s": 5.7109,
+   "ms_per_txn": 0.01588
+  },
+  {
+   "model": "LightGBM | none",
+   "family": "LightGBM",
+   "imbalance": "none",
+   "val_pr_auc": 0.7696,
+   "val_cost": 73000,
+   "val_thr": 0.2998,
+   "test_pr_auc": 0.7992,
+   "test_roc_auc": 0.98266,
+   "test_precision": 0.88525,
+   "test_recall": 0.72973,
+   "test_f1": 0.8,
+   "test_cost": 102100,
+   "test_recall_at_0_5": 0.7027,
+   "test_cost_at_0_5": 112100,
+   "fit_s": 5.57925,
+   "ms_per_txn": 0.01413
+  },
+  {
+   "model": "RandomForest | none",
+   "family": "Random Forest",
+   "imbalance": "none",
+   "val_pr_auc": 0.76938,
+   "val_cost": 66900,
+   "val_thr": 0.17608,
+   "test_pr_auc": 0.78662,
+   "test_roc_auc": 0.94376,
+   "test_precision": 0.74026,
+   "test_recall": 0.77027,
+   "test_f1": 0.75497,
+   "test_cost": 91000,
+   "test_recall_at_0_5": 0.64865,
+   "test_cost_at_0_5": 131200,
+   "fit_s": 107.92509,
+   "ms_per_txn": 0.00562
+  },
+  {
+   "model": "BalancedRF | undersample-bagging",
+   "family": "Balanced RF",
+   "imbalance": "per-tree undersampling",
+   "val_pr_auc": 0.76647,
+   "val_cost": 67800,
+   "val_thr": 0.74333,
+   "test_pr_auc": 0.80194,
+   "test_roc_auc": 0.9887,
+   "test_precision": 0.68235,
+   "test_recall": 0.78378,
+   "test_f1": 0.72956,
+   "test_cost": 88100,
+   "test_recall_at_0_5": 0.86486,
+   "test_cost_at_0_5": 152900,
+   "fit_s": 4.47387,
+   "ms_per_txn": 0.00593
+  },
+  {
+   "model": "RandomForest | class weights",
+   "family": "Random Forest",
+   "imbalance": "class weights",
+   "val_pr_auc": 0.76644,
+   "val_cost": 67800,
+   "val_thr": 0.0849,
+   "test_pr_auc": 0.80178,
+   "test_roc_auc": 0.9397,
+   "test_precision": 0.64444,
+   "test_recall": 0.78378,
+   "test_f1": 0.70732,
+   "test_cost": 89600,
+   "test_recall_at_0_5": 0.67568,
+   "test_cost_at_0_5": 120300,
+   "fit_s": 61.94508,
+   "ms_per_txn": 0.00396
+  },
+  {
+   "model": "RandomForest | SMOTE",
+   "family": "Random Forest",
+   "imbalance": "SMOTE (in-fold)",
+   "val_pr_auc": 0.76445,
+   "val_cost": 70900,
+   "val_thr": 0.431,
+   "test_pr_auc": 0.81347,
+   "test_roc_auc": 0.97024,
+   "test_precision": 0.85938,
+   "test_recall": 0.74324,
+   "test_f1": 0.7971,
+   "test_cost": 97700,
+   "test_recall_at_0_5": 0.72973,
+   "test_cost_at_0_5": 102400,
+   "fit_s": 109.85552,
+   "ms_per_txn": 0.00723
+  },
+  {
+   "model": "XGBoost | SMOTE",
+   "family": "XGBoost",
+   "imbalance": "SMOTE (in-fold)",
+   "val_pr_auc": 0.76312,
+   "val_cost": 69800,
+   "val_thr": 0.36594,
+   "test_pr_auc": 0.77888,
+   "test_roc_auc": 0.97635,
+   "test_precision": 0.73077,
+   "test_recall": 0.77027,
+   "test_f1": 0.75,
+   "test_cost": 91300,
+   "test_recall_at_0_5": 0.74324,
+   "test_cost_at_0_5": 99200,
+   "fit_s": 4.60821,
+   "ms_per_txn": 0.00276
+  },
+  {
+   "model": "LogReg | class weights",
+   "family": "Logistic Regression",
+   "imbalance": "class weights",
+   "val_pr_auc": 0.75307,
+   "val_cost": 74900,
+   "val_thr": 0.99976,
+   "test_pr_auc": 0.74476,
+   "test_roc_auc": 0.98053,
+   "test_precision": 0.72603,
+   "test_recall": 0.71622,
+   "test_f1": 0.72109,
+   "test_cost": 111000,
+   "test_recall_at_0_5": 0.90541,
+   "test_cost_at_0_5": 910100,
+   "fit_s": 0.42098,
+   "ms_per_txn": 0.00025
+  },
+  {
+   "model": "Deep MLP | focal loss",
+   "family": "Deep tabular",
+   "imbalance": "focal loss",
+   "val_pr_auc": 0.74198,
+   "val_cost": 79900,
+   "val_thr": 0.44991,
+   "test_pr_auc": 0.80551,
+   "test_roc_auc": 0.98109,
+   "test_precision": 0.66292,
+   "test_recall": 0.7973,
+   "test_f1": 0.72393,
+   "test_cost": 84000,
+   "test_recall_at_0_5": 0.7973,
+   "test_cost_at_0_5": 81300,
+   "fit_s": 5.55499,
+   "ms_per_txn": 0.00054
+  },
+  {
+   "model": "FT-Transformer | focal loss",
+   "family": "Deep tabular",
+   "imbalance": "focal loss",
+   "val_pr_auc": 0.70669,
+   "val_cost": 71900,
+   "val_thr": 0.27889,
+   "test_pr_auc": 0.73867,
+   "test_roc_auc": 0.9393,
+   "test_precision": 0.74667,
+   "test_recall": 0.75676,
+   "test_f1": 0.75168,
+   "test_cost": 95700,
+   "test_recall_at_0_5": 0.74324,
+   "test_cost_at_0_5": 97400,
+   "fit_s": 264.17021,
+   "ms_per_txn": 0.05751
+  },
+  {
+   "model": "LogReg | SMOTE",
+   "family": "Logistic Regression",
+   "imbalance": "SMOTE (in-fold)",
+   "val_pr_auc": 0.70469,
+   "val_cost": 69600,
+   "val_thr": 0.87,
+   "test_pr_auc": 0.74143,
+   "test_roc_auc": 0.9778,
+   "test_precision": 0.58947,
+   "test_recall": 0.75676,
+   "test_f1": 0.66272,
+   "test_cost": 101700,
+   "test_recall_at_0_5": 0.83784,
+   "test_cost_at_0_5": 103500,
+   "fit_s": 0.65208,
+   "ms_per_txn": 0.00031
+  },
+  {
+   "model": "EasyEnsemble | undersample-boosting",
+   "family": "EasyEnsemble",
+   "imbalance": "per-member undersampling",
+   "val_pr_auc": 0.65445,
+   "val_cost": 95100,
+   "val_thr": 0.63666,
+   "test_pr_auc": 0.59878,
+   "test_roc_auc": 0.98376,
+   "test_precision": 0.49541,
+   "test_recall": 0.72973,
+   "test_f1": 0.59016,
+   "test_cost": 116500,
+   "test_recall_at_0_5": 0.89189,
+   "test_cost_at_0_5": 880600,
+   "fit_s": 4.15053,
+   "ms_per_txn": 0.01643
+  },
+  {
+   "model": "LogReg | none",
+   "family": "Logistic Regression",
+   "imbalance": "none",
+   "val_pr_auc": 0.6081,
+   "val_cost": 83100,
+   "val_thr": 0.15908,
+   "test_pr_auc": 0.69428,
+   "test_roc_auc": 0.97469,
+   "test_precision": 0.58065,
+   "test_recall": 0.72973,
+   "test_f1": 0.64671,
+   "test_cost": 111700,
+   "test_recall_at_0_5": 0.55405,
+   "test_cost_at_0_5": 169800,
+   "fit_s": 0.34128,
+   "ms_per_txn": 0.00029
+  },
+  {
+   "model": "Rule | learned 2-split tree",
+   "family": "Rule baseline",
+   "imbalance": "n/a",
+   "val_pr_auc": 0.14995,
+   "val_cost": 125400,
+   "val_thr": 0.99842,
+   "test_pr_auc": 0.17612,
+   "test_roc_auc": 0.95861,
+   "test_precision": 0.24413,
+   "test_recall": 0.7027,
+   "test_f1": 0.36237,
+   "test_cost": 158300,
+   "test_recall_at_0_5": 0.87838,
+   "test_cost_at_0_5": 938100,
+   "fit_s": 0.0,
+   "ms_per_txn": NaN
+  },
+  {
+   "model": "Rule | night & amount>p95",
+   "family": "Rule baseline",
+   "imbalance": "n/a",
+   "val_pr_auc": 0.001,
+   "val_cost": 285000,
+   "val_thr": Infinity,
+   "test_pr_auc": 0.0013,
+   "test_roc_auc": 0.5,
+   "test_precision": 0.0,
+   "test_recall": 0.0,
+   "test_f1": 0.0,
+   "test_cost": 370000,
+   "test_recall_at_0_5": 0.0,
+   "test_cost_at_0_5": 370000,
+   "fit_s": 0.0,
+   "ms_per_txn": NaN
+  }
+ ],
+ "final_model": "CatBoost | class weights",
+ "shortlist": [
+  "CatBoost | class weights",
+  "LightGBM | Optuna-tuned",
+  "Hybrid | tuned LightGBM + anomaly scores",
+  "Ensemble | soft-vote CatBoost+XGB+LGBM",
+  "XGBoost | none",
+  "XGBoost | class weights"
+ ],
+ "ensemble_members": [
+  "CatBoost | class weights",
+  "XGBoost | class weights",
+  "LightGBM | Optuna-tuned"
+ ],
+ "signal": {
+  "validation": {
+   "pr_auc": 0.7844306100600689,
+   "null_mean": 0.0011668831262948646,
+   "p_value": 0.001996007984031936
+  },
+  "test": {
+   "pr_auc": 0.7994662813267831,
+   "null_mean": 0.001501362328643034,
+   "p_value": 0.001996007984031936
+  }
+ },
+ "has_signal": true,
+ "imbalance_compare": [
+  {
+   "model": "XGBoost | class weights",
+   "family": "XGBoost",
+   "regime": "class weights",
+   "val_pr_auc": 0.7829,
+   "val_cost": 70900,
+   "test_pr_auc": 0.7899,
+   "test_cost": 96500
+  },
+  {
+   "model": "XGBoost | none",
+   "family": "XGBoost",
+   "regime": "none",
+   "val_pr_auc": 0.7755,
+   "val_cost": 70200,
+   "test_pr_auc": 0.7909,
+   "test_cost": 87600
+  },
+  {
+   "model": "LightGBM | SMOTE",
+   "family": "LightGBM",
+   "regime": "SMOTE",
+   "val_pr_auc": 0.773,
+   "val_cost": 68700,
+   "test_pr_auc": 0.7784,
+   "test_cost": 95300
+  },
+  {
+   "model": "LightGBM | class weights",
+   "family": "LightGBM",
+   "regime": "class weights",
+   "val_pr_auc": 0.7711,
+   "val_cost": 72600,
+   "test_pr_auc": 0.794,
+   "test_cost": 87600
+  },
+  {
+   "model": "LightGBM | none",
+   "family": "LightGBM",
+   "regime": "none",
+   "val_pr_auc": 0.7696,
+   "val_cost": 73000,
+   "test_pr_auc": 0.7992,
+   "test_cost": 102100
+  },
+  {
+   "model": "RandomForest | none",
+   "family": "Random Forest",
+   "regime": "none",
+   "val_pr_auc": 0.7694,
+   "val_cost": 66900,
+   "test_pr_auc": 0.7866,
+   "test_cost": 91000
+  },
+  {
+   "model": "RandomForest | class weights",
+   "family": "Random Forest",
+   "regime": "class weights",
+   "val_pr_auc": 0.7664,
+   "val_cost": 67800,
+   "test_pr_auc": 0.8018,
+   "test_cost": 89600
+  },
+  {
+   "model": "RandomForest | SMOTE",
+   "family": "Random Forest",
+   "regime": "SMOTE",
+   "val_pr_auc": 0.7644,
+   "val_cost": 70900,
+   "test_pr_auc": 0.8135,
+   "test_cost": 97700
+  },
+  {
+   "model": "XGBoost | SMOTE",
+   "family": "XGBoost",
+   "regime": "SMOTE",
+   "val_pr_auc": 0.7631,
+   "val_cost": 69800,
+   "test_pr_auc": 0.7789,
+   "test_cost": 91300
+  },
+  {
+   "model": "LogReg | class weights",
+   "family": "Logistic Regression",
+   "regime": "class weights",
+   "val_pr_auc": 0.7531,
+   "val_cost": 74900,
+   "test_pr_auc": 0.7448,
+   "test_cost": 111000
+  },
+  {
+   "model": "LogReg | SMOTE",
+   "family": "Logistic Regression",
+   "regime": "SMOTE",
+   "val_pr_auc": 0.7047,
+   "val_cost": 69600,
+   "test_pr_auc": 0.7414,
+   "test_cost": 101700
+  },
+  {
+   "model": "LogReg | none",
+   "family": "Logistic Regression",
+   "regime": "none",
+   "val_pr_auc": 0.6081,
+   "val_cost": 83100,
+   "test_pr_auc": 0.6943,
+   "test_cost": 111700
+  }
+ ],
+ "pr_auc_ci": [
+  {
+   "model": "CatBoost | class weights",
+   "test_pr_auc": 0.7995,
+   "ci_lo": 0.7081,
+   "ci_hi": 0.8785,
+   "val_pr_auc": 0.7844
+  },
+  {
+   "model": "XGBoost | class weights",
+   "test_pr_auc": 0.7899,
+   "ci_lo": 0.6946,
+   "ci_hi": 0.8707,
+   "val_pr_auc": 0.7829
+  },
+  {
+   "model": "Ensemble | soft-vote CatBoost+XGB+LGBM",
+   "test_pr_auc": 0.7993,
+   "ci_lo": 0.7081,
+   "ci_hi": 0.8802,
+   "val_pr_auc": 0.7808
+  },
+  {
+   "model": "LightGBM | Optuna-tuned",
+   "test_pr_auc": 0.8007,
+   "ci_lo": 0.7089,
+   "ci_hi": 0.8789,
+   "val_pr_auc": 0.777
+  },
+  {
+   "model": "XGBoost | none",
+   "test_pr_auc": 0.7909,
+   "ci_lo": 0.7008,
+   "ci_hi": 0.8656,
+   "val_pr_auc": 0.7755
+  },
+  {
+   "model": "Hybrid | tuned LightGBM + anomaly scores",
+   "test_pr_auc": 0.7886,
+   "ci_lo": 0.699,
+   "ci_hi": 0.8715,
+   "val_pr_auc": 0.775
+  },
+  {
+   "model": "LightGBM | SMOTE",
+   "test_pr_auc": 0.7784,
+   "ci_lo": 0.6833,
+   "ci_hi": 0.8668,
+   "val_pr_auc": 0.773
+  },
+  {
+   "model": "LightGBM | class weights",
+   "test_pr_auc": 0.794,
+   "ci_lo": 0.704,
+   "ci_hi": 0.878,
+   "val_pr_auc": 0.7711
+  },
+  {
+   "model": "LightGBM | none",
+   "test_pr_auc": 0.7992,
+   "ci_lo": 0.7032,
+   "ci_hi": 0.8784,
+   "val_pr_auc": 0.7696
+  },
+  {
+   "model": "RandomForest | none",
+   "test_pr_auc": 0.7866,
+   "ci_lo": 0.6995,
+   "ci_hi": 0.8661,
+   "val_pr_auc": 0.7694
+  },
+  {
+   "model": "BalancedRF | undersample-bagging",
+   "test_pr_auc": 0.8019,
+   "ci_lo": 0.7137,
+   "ci_hi": 0.8818,
+   "val_pr_auc": 0.7665
+  },
+  {
+   "model": "RandomForest | class weights",
+   "test_pr_auc": 0.8018,
+   "ci_lo": 0.7172,
+   "ci_hi": 0.8801,
+   "val_pr_auc": 0.7664
+  },
+  {
+   "model": "RandomForest | SMOTE",
+   "test_pr_auc": 0.8135,
+   "ci_lo": 0.7242,
+   "ci_hi": 0.884,
+   "val_pr_auc": 0.7644
+  },
+  {
+   "model": "XGBoost | SMOTE",
+   "test_pr_auc": 0.7789,
+   "ci_lo": 0.6838,
+   "ci_hi": 0.8679,
+   "val_pr_auc": 0.7631
+  },
+  {
+   "model": "LogReg | class weights",
+   "test_pr_auc": 0.7448,
+   "ci_lo": 0.6551,
+   "ci_hi": 0.8586,
+   "val_pr_auc": 0.7531
+  },
+  {
+   "model": "Deep MLP | focal loss",
+   "test_pr_auc": 0.8055,
+   "ci_lo": 0.7203,
+   "ci_hi": 0.8812,
+   "val_pr_auc": 0.742
+  },
+  {
+   "model": "FT-Transformer | focal loss",
+   "test_pr_auc": 0.7387,
+   "ci_lo": 0.6404,
+   "ci_hi": 0.8319,
+   "val_pr_auc": 0.7067
+  },
+  {
+   "model": "LogReg | SMOTE",
+   "test_pr_auc": 0.7414,
+   "ci_lo": 0.6442,
+   "ci_hi": 0.8334,
+   "val_pr_auc": 0.7047
+  },
+  {
+   "model": "EasyEnsemble | undersample-boosting",
+   "test_pr_auc": 0.5988,
+   "ci_lo": 0.4883,
+   "ci_hi": 0.7273,
+   "val_pr_auc": 0.6544
+  },
+  {
+   "model": "LogReg | none",
+   "test_pr_auc": 0.6943,
+   "ci_lo": 0.589,
+   "ci_hi": 0.7903,
+   "val_pr_auc": 0.6081
+  },
+  {
+   "model": "Rule | learned 2-split tree",
+   "test_pr_auc": 0.1761,
+   "ci_lo": 0.1265,
+   "ci_hi": 0.2247,
+   "val_pr_auc": 0.15
+  },
+  {
+   "model": "Rule | night & amount>p95",
+   "test_pr_auc": 0.0013,
+   "ci_lo": 0.0013,
+   "ci_hi": 0.0013,
+   "val_pr_auc": 0.001
+  }
+ ],
+ "sup_vs_anom_top1": {
+  "fraud_total": 74,
+  "sup_top1": 63,
+  "anom_top1": 44,
+  "anom_only": 1,
+  "sup_only": 20,
+  "both": 43
+ },
+ "best_anomaly": "COPOD",
+ "threshold": {
+  "t_cost": 0.11850555351230531,
+  "test_default": {
+   "accuracy": 0.9995241955380115,
+   "precision": 0.8615384615384616,
+   "recall": 0.7567567567567568,
+   "f1": 0.8057553956834532,
+   "pr_auc": 0.7994662813267831,
+   "roc_auc": 0.9684059147374365,
+   "tp": 56,
+   "fp": 9,
+   "fn": 18,
+   "tn": 56663,
+   "cost_inr": 92700
+  },
+  "test_cost": {
+   "accuracy": 0.9993303492757198,
+   "precision": 0.725,
+   "recall": 0.7837837837837838,
+   "f1": 0.7532467532467533,
+   "pr_auc": 0.7994662813267831,
+   "roc_auc": 0.9684059147374365,
+   "tp": 58,
+   "fp": 22,
+   "fn": 16,
+   "tn": 56650,
+   "cost_inr": 86600
+  },
+  "approve_all_cost": 370000.0,
+  "ci_pr_auc": [
+   0.7080858601728076,
+   0.8782680592531953
+  ],
+  "ci_cost": [
+   54500.0,
+   127244.99999999996
+  ],
+  "ci_recall": [
+   0.6756756756756757,
+   0.8648648648648649
+  ],
+  "bayes_threshold_if_calibrated": 0.05660377358490566
+ },
+ "sensitivity": {
+  "X": [
+   1000,
+   2500,
+   5000,
+   10000,
+   25000
+  ],
+  "Y": [
+   50,
+   150,
+   300,
+   600,
+   1200
+  ],
+  "thr": [
+   [
+    0.1185,
+    0.1185,
+    0.1185,
+    0.0095,
+    0.0015
+   ],
+   [
+    0.7711,
+    0.1185,
+    0.1185,
+    0.1185,
+    0.0095
+   ],
+   [
+    0.7711,
+    0.7711,
+    0.1185,
+    0.1185,
+    0.1185
+   ],
+   [
+    0.7711,
+    0.7711,
+    0.7711,
+    0.1185,
+    0.1185
+   ],
+   [
+    0.7711,
+    0.7711,
+    0.7711,
+    0.7711,
+    0.1185
+   ]
+  ],
+  "recall": [
+   [
+    0.784,
+    0.784,
+    0.784,
+    0.811,
+    0.865
+   ],
+   [
+    0.73,
+    0.784,
+    0.784,
+    0.784,
+    0.811
+   ],
+   [
+    0.73,
+    0.73,
+    0.784,
+    0.784,
+    0.784
+   ],
+   [
+    0.73,
+    0.73,
+    0.73,
+    0.784,
+    0.784
+   ],
+   [
+    0.73,
+    0.73,
+    0.73,
+    0.73,
+    0.784
+   ]
+  ],
+  "flagged": [
+   [
+    80.0,
+    80.0,
+    80.0,
+    185.0,
+    800.0
+   ],
+   [
+    60.0,
+    80.0,
+    80.0,
+    80.0,
+    185.0
+   ],
+   [
+    60.0,
+    60.0,
+    80.0,
+    80.0,
+    80.0
+   ],
+   [
+    60.0,
+    60.0,
+    60.0,
+    80.0,
+    80.0
+   ],
+   [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    80.0
+   ]
+  ]
+ },
+ "bands": {
+  "T_otp": 0.00949306579604759,
+  "T_block": 0.7710658075963803,
+  "risk_otp": 0.9900990099009901,
+  "risk_block": 88.88888888888889,
+  "val": [
+   {
+    "band": "APPROVE",
+    "transactions": 56578,
+    "pct_of_txns": 99.70570094281435,
+    "frauds": 11,
+    "pct_of_all_fraud": 19.29824561403509,
+    "genuine": 56567,
+    "fraud_rate_in_band_pct": 0.01944218600869596,
+    "cost_from_fraud": 55000.0,
+    "cost_from_genuine": 0.0,
+    "total_cost": 55000.0
+   },
+   {
+    "band": "STEP-UP OTP",
+    "transactions": 123,
+    "pct_of_txns": 0.2167591858313508,
+    "frauds": 3,
+    "pct_of_all_fraud": 5.2631578947368425,
+    "genuine": 120,
+    "fraud_rate_in_band_pct": 2.4390243902439024,
+    "cost_from_fraud": 4545.000000000001,
+    "cost_from_genuine": 1800.0,
+    "total_cost": 6345.000000000001
+   },
+   {
+    "band": "BLOCK",
+    "transactions": 44,
+    "pct_of_txns": 0.07753987135430435,
+    "frauds": 43,
+    "pct_of_all_fraud": 75.43859649122807,
+    "genuine": 1,
+    "fraud_rate_in_band_pct": 97.72727272727273,
+    "cost_from_fraud": 0.0,
+    "cost_from_genuine": 300.0,
+    "total_cost": 300.0
+   }
+  ],
+  "test": [
+   {
+    "band": "APPROVE",
+    "transactions": 56561,
+    "pct_of_txns": 99.67398583160046,
+    "frauds": 14,
+    "pct_of_all_fraud": 18.91891891891892,
+    "genuine": 56547,
+    "fraud_rate_in_band_pct": 0.024752037623097186,
+    "cost_from_fraud": 70000.0,
+    "cost_from_genuine": 0.0,
+    "total_cost": 70000.0
+   },
+   {
+    "band": "STEP-UP OTP",
+    "transactions": 125,
+    "pct_of_txns": 0.22027984351319918,
+    "frauds": 6,
+    "pct_of_all_fraud": 8.108108108108109,
+    "genuine": 119,
+    "fraud_rate_in_band_pct": 4.8,
+    "cost_from_fraud": 9090.000000000002,
+    "cost_from_genuine": 1785.0,
+    "total_cost": 10875.000000000002
+   },
+   {
+    "band": "BLOCK",
+    "transactions": 60,
+    "pct_of_txns": 0.1057343248863356,
+    "frauds": 54,
+    "pct_of_all_fraud": 72.97297297297297,
+    "genuine": 6,
+    "fraud_rate_in_band_pct": 90.0,
+    "cost_from_fraud": 0.0,
+    "cost_from_genuine": 1800.0,
+    "total_cost": 1800.0
+   }
+  ]
+ },
+ "bayes_bands": {
+  "p_otp": 0.004285714285714286,
+  "p_block": 0.15833333333333333
+ },
+ "policies_test": {
+  "Approve everything (no model)": {
+   "test_cost": 370000.0,
+   "saving_vs_no_model": 0.0,
+   "cost_per_1M_txns (scenario)": 6520283.367990696
+  },
+  "Model @ default 0.5 (block/approve)": {
+   "test_cost": 92700.0,
+   "saving_vs_no_model": 277300.0,
+   "cost_per_1M_txns (scenario)": 1633595.319493885
+  },
+  "Model @ cost threshold (block/approve)": {
+   "test_cost": 86600.0,
+   "saving_vs_no_model": 283400.0,
+   "cost_per_1M_txns (scenario)": 1526098.755859444
+  },
+  "3-band rule (approve / OTP / block)": {
+   "test_cost": 82675.0,
+   "saving_vs_no_model": 287325.0,
+   "cost_per_1M_txns (scenario)": 1456930.8849962992
+  }
+ },
+ "n_test": 56746,
+ "test_frauds": 74,
+ "test_days": 0.31895833333333334,
+ "otp_sensitivity": {
+  "Z": [
+   5,
+   10,
+   15,
+   30,
+   50
+  ],
+  "stop": [
+   0.5,
+   0.6,
+   0.7,
+   0.8,
+   0.9
+  ],
+  "test_cost": [
+   [
+    80500.0,
+    88050.0,
+    88675.0,
+    92400.0,
+    86600.0
+   ],
+   [
+    75500.0,
+    85050.0,
+    85675.0,
+    90400.0,
+    90800.0
+   ],
+   [
+    70500.0,
+    74200.0,
+    82675.0,
+    84550.0,
+    88800.0
+   ],
+   [
+    65500.0,
+    69200.0,
+    79675.0,
+    81550.0,
+    86800.0
+   ],
+   [
+    73115.0,
+    64200.0,
+    76675.0,
+    78550.0,
+    84800.0
+   ]
+  ],
+  "otp_n": [
+   [
+    740.0,
+    125.0,
+    125.0,
+    20.0,
+    0.0
+   ],
+   [
+    740.0,
+    125.0,
+    125.0,
+    20.0,
+    20.0
+   ],
+   [
+    740.0,
+    740.0,
+    125.0,
+    125.0,
+    20.0
+   ],
+   [
+    740.0,
+    740.0,
+    125.0,
+    125.0,
+    20.0
+   ],
+   [
+    4163.0,
+    740.0,
+    125.0,
+    125.0,
+    20.0
+   ]
+  ],
+  "block_n": [
+   [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    80.0
+   ],
+   [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    60.0
+   ],
+   [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    60.0
+   ],
+   [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    60.0
+   ],
+   [
+    60.0,
+    60.0,
+    60.0,
+    60.0,
+    60.0
+   ]
+  ]
+ },
+ "band_value": [
+  {
+   "band": "APPROVE",
+   "fraud_value": 2385.48,
+   "genuine_value": 4406959.28,
+   "share_of_fraud_value_pct": 30.87
+  },
+  {
+   "band": "STEP-UP OTP",
+   "fraud_value": 1249.82,
+   "genuine_value": 21733.31,
+   "share_of_fraud_value_pct": 16.17
+  },
+  {
+   "band": "BLOCK",
+   "fraud_value": 4092.37,
+   "genuine_value": 25696.24,
+   "share_of_fraud_value_pct": 52.96
+  }
+ ],
+ "three_band_ci": [
+  51836.875,
+  114979.74999999999
+ ],
+ "projection": {
+  "per_1m_three_band": 1456930.8849962992,
+  "per_1m_ci": [
+   913489.4970570613,
+   2026217.7069749408
+  ],
+  "per_1m_no_model": 6520283.367990696,
+  "per_1m_saving": 5063352.482994396
+ },
+ "shap": {
+  "model": "CatBoost | class weights",
+  "top": {
+   "V1": 0.9606,
+   "V14": 0.8602,
+   "V4": 0.6836,
+   "V8": 0.3975,
+   "V12": 0.3882,
+   "hour_sin": 0.3087,
+   "V11": 0.2975,
+   "V10": 0.2396,
+   "V3": 0.2187,
+   "V24": 0.211
+  },
+  "additivity_err": 6.039613253960852e-14
+ }
+}

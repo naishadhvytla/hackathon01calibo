@@ -1,0 +1,7 @@
+Check,Finding,Treatment
+Missing values,0 missing cells across 31 columns,None needed
+Exact duplicate rows,1081 rows (19 labelled fraud),Dropped (keep first) — duplicates would inflate fraud memorisation and can straddle the split
+Impossible amounts,0 negative amounts; 1808 zero-amount rows (25 fraud),"Kept zero amounts and added an `amount_zero` flag — zero-amount authorisations are a known card-testing pattern, not an error"
+Timestamp / time step,"`Time` = seconds since first txn, range 0–172792 s (~2 days), monotonic=True",Derived hour-of-day assuming the capture started at 00:00 (low-volume trough at 01–06 supports this); raw `Time` dropped as a feature because absolute time does not generalise to future days
+Inconsistent categories,No categorical columns (V1–V28 are anonymised PCA components),Not applicable
+Leakage columns,No balance / post-outcome columns; `Class` is the only label-derived field,Only `Class` excluded from features
