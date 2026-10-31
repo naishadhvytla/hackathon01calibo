@@ -13,6 +13,9 @@
 # # FraudGuard — Real-Time Payment Fraud Decision System
 # **KLU + Path-3 · ML-02 · Real-Time UPI / Digital Payment Fraud Detection**
 #
+# **Group 8 · Matrix Mechanics** — N. Varshitha · M. Kumara Swamy · V. Naishadh · M. Suman Srinivas  
+# Live app: <https://calibofraudguard.netlify.app/> · Code: <https://github.com/naishadhvytla/hackathon01calibo>
+#
 # One parameterised pipeline, run on two datasets:
 #
 # | Run | `DATASET` | Role |
@@ -24,17 +27,17 @@
 # time-aware split before anything else · SMOTE only *inside* the training pipeline · no tuning or threshold choice on test ·
 # leakage columns excluded · accuracy reported only to show it is a trap · savings labelled as scenario estimates.
 #
-# | Section | Problem statement |
-# |---|---|
-# | 1 | PS1 Data quality & leakage audit |
-# | 2 | PS2 Fraud lens & the accuracy trap |
-# | 3 | PS3 Fraud patterns (EDA) |
-# | 4 | PS4 Supervised models: rule baseline vs 15 models × imbalance regimes, tuned GBDT, deep tabular (MLP + FT-Transformer, focal loss) |
-# | 5 | PS5 Label-free anomaly detection: Isolation Forest, ECOD, COPOD, LOF, Autoencoder, DBSCAN |
-# | 6 | Hybrid (supervised + anomaly scores) and ensemble; model selection on validation |
-# | 7 | PS6 PR curves and the cost-based threshold, with cost sensitivity |
-# | 8 | PS7 Approve / step-up OTP / block risk rule |
-# | 9 | PS8 SHAP explanation and the evidence for the management actions |
+# | Section | Problem statement | Owner |
+# |---|---|---|
+# | 1 | PS1 Data quality & leakage audit | N. Varshitha |
+# | 2 | PS2 Fraud lens & the accuracy trap | N. Varshitha |
+# | 3 | PS3 Fraud patterns (EDA) | M. Kumara Swamy |
+# | 4 | PS4 Supervised models: rule baseline vs 15 models × imbalance regimes, tuned GBDT, deep tabular (MLP + FT-Transformer, focal loss) | M. Kumara Swamy |
+# | 5 | PS5 Label-free anomaly detection: Isolation Forest, ECOD, COPOD, LOF, Autoencoder, DBSCAN | V. Naishadh |
+# | 6 | Hybrid (supervised + anomaly scores) and ensemble; model selection on validation | V. Naishadh (with PS5) |
+# | 7 | PS6 PR curves and the cost-based threshold, with cost sensitivity | V. Naishadh |
+# | 8 | PS7 Approve / step-up OTP / block risk rule | M. Suman Srinivas |
+# | 9 | PS8 SHAP explanation and the evidence for the management actions | M. Suman Srinivas |
 
 # %%
 # ── Setup ─────────────────────────────────────────────────────────────────────
@@ -83,7 +86,7 @@ def find(pattern):
 print(f"DATASET={DATASET}  FAST={FAST}  costs: missed fraud ₹{COST.X:,.0f} | false block ₹{COST.Y:,.0f} | OTP ₹{COST.Z:,.0f} | OTP stops {COST.otp_stop_rate:.0%} of fraud")
 
 # %% [markdown]
-# ## 1 · Data quality & reliability (PS1)
+# ## 1 · Data quality & reliability (PS1) — owner: N. Varshitha
 # We check for missing values, duplicates, impossible amounts, malformed timestamps, inconsistent categories and leakage columns,
 # and record what we retained, excluded or transformed.
 
@@ -111,7 +114,7 @@ pos_weight = (ytr == 0).sum() / max(ytr.sum(), 1)
 SUMMARY["split"] = split_df.to_dict("records")
 
 # %% [markdown]
-# ## 2 · The fraud lens & the accuracy trap (PS2)
+# ## 2 · The fraud lens & the accuracy trap (PS2) — owner: N. Varshitha
 # **Target:** `Class` / `fraud_flag` (1 = fraud). A "do-nothing" model labels every transaction genuine.
 
 # %%
@@ -141,7 +144,7 @@ L.savefig(fig, "01_class_imbalance.png", FIG); plt.show()
 # is excluded because SUCCESS/FAILED is only known after the payment decision.
 
 # %% [markdown]
-# ## 3 · Diagnosing fraud patterns (PS3)
+# ## 3 · Diagnosing fraud patterns (PS3) — owner: M. Kumara Swamy
 # Fraud rates come with **Wilson 95% confidence intervals** and a chi-square test of independence, which matters when a group
 # holds only a handful of frauds. These are **associations, not causes**.
 
@@ -165,7 +168,7 @@ def rate_plot(ax, g, col, title, p, horizontal=False):
     ax.axhline(base, color=L.C["ink"], ls="--", lw=1); ax.text(len(g) - 0.5, base, " overall", va="bottom", ha="right", fontsize=9)
     labs = [(f"≤{v.right:,.0f}" if v.right >= 10 else f"≤{v.right:g}") if isinstance(v, pd.Interval) else str(v) for v in g[col]]
     ax.set_xticks(x); ax.set_xticklabels(labs, rotation=0 if len(g) < 8 else 45, ha="center" if len(g) < 8 else "right", fontsize=9)
-    ax.set_ylabel("Fraud rate (%)"); ax.set_title(f"{title}   (χ² p={p:.3g})")
+    ax.set_ylabel("Fraud rate (%)"); ax.set_title(f"{title}\nχ² test p = {p:.3g}", fontsize=11, loc="left")
 
 eda_findings = {}
 df["amount_band"] = pd.qcut(df["amount"], 8, duplicates="drop")
@@ -173,9 +176,10 @@ if DATASET == "creditcard":
     g_amt, p_amt = rate_table("amount_band"); g_hr, p_hr = rate_table("hour")
     g_zero, p_zero = rate_table("amount_zero"); g_day, p_day = rate_table("day")
     fig, axes = plt.subplots(1, 2, figsize=(14, 4.2))
-    rate_plot(axes[0], g_amt, "amount_band", "Fraud rate by amount band (octiles; currency not stated in source)", p_amt)
-    rate_plot(axes[1], g_hr, "hour", "Fraud rate by hour of day", p_hr)
-    fig.suptitle("Fraud is over-represented at tiny amounts (≤1.51, card-testing pattern), above 77.51, and at 02–05h (orange = whole 95% CI above overall rate)", x=0.01, ha="left", fontsize=12)
+    rate_plot(axes[0], g_amt, "amount_band", "Fraud rate by amount band (octiles)", p_amt)
+    axes[0].set_xlabel("Amount band (currency not stated in source)")
+    rate_plot(axes[1], g_hr, "hour", "Fraud rate by hour of day", p_hr); axes[1].set_xlabel("Hour of day (derived from Time)")
+    fig.suptitle("Fraud is over-represented at tiny amounts (≤1.51, card-testing pattern), above 77.51, and at 02–05h\n(orange = whole 95% CI above the overall rate)", x=0.01, y=1.0, va="bottom", ha="left", fontsize=12)
     L.savefig(fig, "02_fraud_by_amount_hour.png", FIG); plt.show()
     display(g_amt.round(3)); display(g_zero.round(3))
     night = df.hour.between(1, 5)
@@ -194,7 +198,7 @@ if DATASET == "creditcard":
         ax.hist(df.loc[df[TARGET] == 0, c].clip(lo, hi), bins=bins, density=True, alpha=0.6, color=L.C["genuine"], label="genuine")
         ax.hist(df.loc[df[TARGET] == 1, c].clip(lo, hi), bins=bins, density=True, alpha=0.7, color=L.C["fraud"], label="fraud")
         ax.set_title(f"{c}  (KS={ks[c]:.2f})"); ax.set_yticks([])
-    axes[0].legend(); fig.suptitle("Fraud has a distinct behavioural signature in a handful of components", x=0.01, ha="left", fontsize=12)
+    axes[0].legend(); fig.suptitle("Fraud has a distinct behavioural signature in a handful of components", x=0.01, y=1.0, va="bottom", ha="left", fontsize=12)
     L.savefig(fig, "03_behaviour_signature.png", FIG); plt.show()
     # over time
     hourly = df.assign(abs_hour=(df.Time // 3600).astype(int)).groupby("abs_hour")[TARGET].agg(["size", "sum"])
@@ -213,7 +217,7 @@ else:
     for ax, (c, t) in zip(axes.ravel(), plots):
         g, p = rate_table(c); pvals[c] = p; rate_plot(ax, g, c, t, p)
         eda_findings[c] = g[[c, "txns", "frauds", "fraud_rate_pct", "ci_lo", "ci_hi"]].astype({c: str}).to_dict("records")
-    fig.suptitle("UPI: no transaction type, merchant, amount, hour or device carries the fraud (the one orange bar does not survive multiple-testing correction)", x=0.01, y=0.98, ha="left", fontsize=12)
+    fig.suptitle("UPI: no transaction type, merchant, amount, hour or device carries the fraud (the one orange bar does not survive multiple-testing correction)", x=0.01, y=1.0, va="bottom", ha="left", fontsize=12)
     L.savefig(fig, "02_upi_fraud_rates.png", FIG); plt.show()
     allp = {c: chi2_contingency(pd.crosstab(df[c], df[TARGET]))[1] for c in L.UPI_CATS + ["hour", "amount_band", "transaction_status"]}
     pv = pd.Series(allp).sort_values(); bonf = 0.05 / len(pv)
@@ -225,7 +229,7 @@ else:
 SUMMARY["eda"] = eda_findings
 
 # %% [markdown]
-# ## 4 · Supervised fraud detection (PS4)
+# ## 4 · Supervised fraud detection (PS4) — owner: M. Kumara Swamy
 # **Protocol.** Every model is fitted on train, compared on validation and frozen before test is touched. Imbalance handling is compared
 # per model family: **none** vs **class weights** vs **SMOTE inside an `imblearn.Pipeline`** (synthetic frauds created from the training
 # fold only). On top of the brief's LR / RF / XGBoost we add LightGBM, CatBoost, Balanced RF, EasyEnsemble, an Optuna-tuned LightGBM,
@@ -314,7 +318,7 @@ for arch, nm in [("mlp", "Deep MLP | focal loss"), ("ftt", "FT-Transformer | foc
     print(f"{nm:32s} val PR-AUC={average_precision_score(yva, r['val']):.4f}  epochs={len(r['history'])}  fit {r['fit_s']:.0f}s")
 
 # %% [markdown]
-# ## 5 · Detecting unknown fraud with label-free anomaly detection (PS5)
+# ## 5 · Detecting unknown fraud with label-free anomaly detection (PS5) — owner: V. Naishadh
 # The detectors are fitted on **training features only, and `y` is never passed in**, mirroring new fraud patterns that have no
 # labels yet. Labels are used only afterwards, to ask how much fraud sits in the top 1% of anomaly scores.
 
@@ -465,7 +469,7 @@ for j, (metric, lab) in enumerate([("val_pr_auc", "Validation PR-AUC (higher is 
     ax.set_xticks(range(len(fams))); ax.set_xticklabels([short_names[f] for f in fams]); ax.set_title(lab)
     if metric == "val_cost": ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, p: L.inr(v)))
 axes[0].legend(title="imbalance handling", ncol=3, loc="upper left", bbox_to_anchor=(0, -0.08))
-fig.suptitle("Imbalance handling matters most for the linear model; for tree ensembles the three regimes are within noise", x=0.01, y=1.03, ha="left", fontsize=12)
+fig.suptitle("Imbalance handling matters most for the linear model; for tree ensembles the three regimes are within noise", x=0.01, y=1.0, va="bottom", ha="left", fontsize=12)
 L.savefig(fig, "05_weights_vs_smote.png", FIG); plt.show()
 SUMMARY["imbalance_compare"] = sub[["model", "family", "regime", "val_pr_auc", "val_cost", "test_pr_auc", "test_cost"]].round(4).to_dict("records")
 
@@ -527,7 +531,7 @@ for ax, m in zip(axes.ravel(), ms):
     ax.set_title(f"{m}\nAP test {average_precision_score(yte, SCORES[m]['test']):.3f} · val {average_precision_score(yva, SCORES[m]['val']):.3f}", fontsize=8, loc="left")
     ax.set_ylim(0, 1.02); ax.set_xlim(0, 1)
 for ax in axes.ravel()[len(ms):]: ax.set_visible(False)
-fig.suptitle("Individual precision–recall curves (solid = test, dashed = validation)", x=0.01, ha="left", fontsize=12)
+fig.suptitle("Individual precision–recall curves (solid = test, dashed = validation)", x=0.01, y=1.0, va="bottom", ha="left", fontsize=12)
 fig.tight_layout(); L.savefig(fig, "05d_individual_pr_curves.png", FIG); plt.show()
 
 # combined ROC (with the imbalance caveat)
@@ -570,7 +574,7 @@ ax.set_xlim(0, 110); ax.set_xlabel("% of test fraud caught in top 1% of scores")
 L.savefig(fig, "06_anomaly_vs_supervised.png", FIG); plt.show()
 
 # %% [markdown]
-# ## 7 · Precision–recall curves & the cost-based threshold (PS6)
+# ## 7 · Precision–recall curves & the cost-based threshold (PS6) — owner: V. Naishadh
 # Expected cost = missed fraud × ₹X + false blocks × ₹Y. The threshold that minimises it is chosen on **validation**, then frozen
 # and reported on **test**, alongside the default 0.5.
 
@@ -676,12 +680,12 @@ for ax, G, t, fmt in [(axes[0], grid_rec, "Test recall at the cost-optimal thres
                     fontweight="bold" if (Xs[j] == COST.X and Ys[i] == COST.Y) else "normal")
     ax.set_xticks(range(len(Xs))); ax.set_xticklabels([f"₹{v:,}" for v in Xs]); ax.set_yticks(range(len(Ys))); ax.set_yticklabels([f"₹{v:,}" for v in Ys])
     ax.set_xlabel("₹X — cost of a missed fraud"); ax.set_ylabel("₹Y — cost of blocking a genuine txn"); ax.set_title(t)
-fig.suptitle("Cost sensitivity: as missed fraud gets dearer the threshold drops and recall rises (bold = base-case assumption)", x=0.01, ha="left", fontsize=12)
+fig.suptitle("Cost sensitivity: as missed fraud gets dearer the threshold drops and recall rises (bold = base-case assumption)", x=0.01, y=1.0, va="bottom", ha="left", fontsize=12)
 L.savefig(fig, "10_cost_sensitivity.png", FIG); plt.show()
 SUMMARY["sensitivity"] = dict(X=Xs, Y=Ys, thr=grid_thr.round(4).tolist(), recall=grid_rec.round(3).tolist(), flagged=grid_flag.tolist())
 
 # %% [markdown]
-# ## 8 · Risk-score decision rule: approve / step-up OTP / block (PS7)
+# ## 8 · Risk-score decision rule: approve / step-up OTP / block (PS7) — owner: M. Suman Srinivas
 # Two thresholds `T_otp < T_block` are grid-searched on **validation** to minimise total cost:
 #
 # * **APPROVE** (score < T_otp): fraud costs ₹X.
@@ -777,7 +781,7 @@ for ax, G, t, f_ in [(axes[0], g_cost, "Test cost of the re-optimised 3-band rul
     ax.set_xticks(range(len(Zs))); ax.set_xticklabels([f"₹{z}" for z in Zs]); ax.set_yticks(range(len(stops))); ax.set_yticklabels([f"{s_:.0%}" for s_ in stops])
     ax.set_xlabel("₹Z — cost per OTP challenge"); ax.set_ylabel("share of fraud the OTP stops"); ax.set_title(t)
 fig.suptitle("OTP assumptions: the block band never moves; a dearer or weaker OTP shrinks the OTP band (bold = base case; thresholds re-chosen on validation each time)" if HAS_SIGNAL
-             else "OTP assumptions: with no signal, no setting makes the rule beat approve-all", x=0.01, ha="left", fontsize=12)
+             else "OTP assumptions: with no signal, no setting makes the rule beat approve-all", x=0.01, y=1.0, va="bottom", ha="left", fontsize=12)
 L.savefig(fig, "10b_otp_sensitivity.png", FIG); plt.show()
 SUMMARY["otp_sensitivity"] = dict(Z=Zs, stop=stops, test_cost=g_cost.tolist(), otp_n=g_otp.tolist(), block_n=g_blk.tolist())
 
@@ -827,7 +831,7 @@ print(f"3-band test cost {L.inr(final_c)} (95% CI {L.inr(ci_band[0])}–{L.inr(c
 SUMMARY["three_band_ci"] = ci_band; SUMMARY["projection"] = proj
 
 # %% [markdown]
-# ## 9 · Explaining the final model (PS8)
+# ## 9 · Explaining the final model (PS8) — owner: M. Suman Srinivas
 # The final model is explained with **TreeSHAP** in **log-odds (raw margin)** space, using the exact tree-path-dependent algorithm.
 # Explanation rows: every test fraud plus 3,000 random test genuines (seed 42). Additivity is checked against `predict(raw_score=True)`.
 # If the selected model is an ensemble, we explain its strongest GBDT member. SHAP describes **how the model uses features, not what

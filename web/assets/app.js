@@ -396,24 +396,46 @@
   }
 
   // ---------------------------------------------------------------- auth + history (Supabase)
-  views.login = () => authView("login");
-  views.signup = () => authView("signup");
+  // The whole app sits behind this page when Supabase is configured: sign in or create an account first.
   function authView(kind) {
-    if (!S.sb) { $("#main").innerHTML = `<div class="auth panel"><h1>Sign-in is off</h1><p>This deployment has no Supabase keys yet. Add them to <code>config.js</code> (see README). Scoring, batch, policy and evidence all work without an account.</p></div>`; return; }
-    $("#main").innerHTML = `<form class="auth panel stack" id="authf"><h1>${kind === "login" ? "Sign in" : "Create an account"}</h1>
-      <div><label for="em">Email</label><input id="em" type="email" required autocomplete="email"></div>
-      <div><label for="pw">Password</label><input id="pw" type="password" minlength="8" required autocomplete="${kind === "login" ? "current-password" : "new-password"}"></div>
-      <button class="btn" type="submit">${kind === "login" ? "Sign in" : "Create account"}</button>
-      <button class="btn ghost" type="button" id="google">Continue with Google</button>
-      <p class="small">${kind === "login" ? 'New here? <a href="#signup">Create an account</a>' : 'Have an account? <a href="#login">Sign in</a>'}</p>
-      <p class="small muted" id="authmsg"></p></form>`;
+    const login = kind !== "signup";
+    $("#main").innerHTML = `<div class="gate">
+      <section class="gate-intro">
+        <p class="eyebrow">Group 8 · Matrix Mechanics · KLU + Path-3 ML-02</p>
+        <h1>Every payment gets a decision and a reason.</h1>
+        <p class="lede">FraudGuard scores credit-card and UPI payments, returns approve, step-up OTP or block, explains the call with SHAP, and shows the rupee cost behind every threshold.</p>
+        <ul class="gate-points">
+          <li><span class="pill APPROVE">APPROVE</span> low risk goes straight through</li>
+          <li><span class="pill OTP">STEP-UP OTP</span> the grey zone gets a one-time password</li>
+          <li><span class="pill BLOCK">BLOCK</span> high risk is stopped and reviewed</li>
+        </ul>
+      </section>
+      <form class="panel gate-card stack" id="authf" novalidate>
+        <div class="gate-tabs" role="tablist" aria-label="Account">
+          <a role="tab" href="#login" aria-selected="${login}">Sign in</a>
+          <a role="tab" href="#signup" aria-selected="${!login}">Create account</a>
+        </div>
+        <h2>${login ? "Welcome back" : "Create your account"}</h2>
+        <div><label for="em">Email</label><input id="em" type="email" required autocomplete="email" placeholder="you@example.com"></div>
+        <div><label for="pw">Password</label><input id="pw" type="password" minlength="8" required autocomplete="${login ? "current-password" : "new-password"}" placeholder="${login ? "" : "At least 8 characters"}"></div>
+        <button class="btn" type="submit" id="authbtn">${login ? "Sign in" : "Create account"}</button>
+        <p class="small muted" id="authmsg" role="status" aria-live="polite"></p>
+        <p class="small">${login ? 'New here? <a href="#signup">Create an account</a>' : 'Already have an account? <a href="#login">Sign in</a>'}</p>
+      </form></div>`;
     $("#authf").onsubmit = async (e) => {
-      e.preventDefault(); const email = $("#em").value, password = $("#pw").value;
-      const { error } = kind === "login" ? await S.sb.auth.signInWithPassword({ email, password }) : await S.sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin } });
-      $("#authmsg").textContent = error ? error.message : (kind === "signup" ? "Check your inbox to confirm your email, then sign in." : "");
-      if (!error && kind === "login") location.hash = "#score";
+      e.preventDefault();
+      const email = $("#em").value.trim(), password = $("#pw").value, msg = $("#authmsg"), btn = $("#authbtn");
+      if (!email || !$("#em").checkValidity()) { msg.textContent = "Enter a valid email address."; return; }
+      if (password.length < 8) { msg.textContent = "Password needs at least 8 characters."; return; }
+      btn.disabled = true; msg.textContent = login ? "Signing in…" : "Creating your account…";
+      const { data, error } = login
+        ? await S.sb.auth.signInWithPassword({ email, password })
+        : await S.sb.auth.signUp({ email, password, options: { emailRedirectTo: location.origin } });
+      btn.disabled = false;
+      if (error) { msg.textContent = error.message; return; }
+      // Signed in (or sign-up with email confirmation off): onAuthStateChange opens the app.
+      if (!login && !data.session) msg.textContent = `We sent a confirmation link to ${email}. Open it, then sign in here.`;
     };
-    $("#google").onclick = () => S.sb.auth.signInWithOAuth({ provider: "google", options: { redirectTo: location.origin } });
   }
   async function logAudit(action, detail) { if (S.sb && S.user) await S.sb.from("audit_log").insert({ user_id: S.user.id, action, detail }); }
   async function countRows(table) { const { count } = await S.sb.from(table).select("id", { count: "exact", head: true }).eq("user_id", S.user.id); return count || 0; }
@@ -480,6 +502,10 @@
   async function route() {
     let r = location.hash.replace(/^#\/?/, "").split("?")[0] || "score";
     if (r === "main") return;   // skip-to-content link
+    const gated = !!S.sb && !S.user;
+    document.body.classList.toggle("gated", gated);
+    if (gated) { authView(r === "signup" ? "signup" : "login"); $("#main").focus({ preventScroll: true }); return; }
+    if (r === "login" || r === "signup" || r.startsWith("access_token") || r.startsWith("error")) { history.replaceState(null, "", "#score"); r = "score"; }
     $$(".nav a").forEach((a) => a.classList.toggle("active", a.dataset.route === r));
     $("#main").innerHTML = `<p class="loading">Loading the ${S.mode === "upi" ? "UPI" : "credit-card"} model…</p>`;
     await Promise.all([load(S.mode), load(S.mode === "upi" ? "creditcard" : "upi")]);
@@ -490,13 +516,24 @@
     const cfg = window.FG_CONFIG || {};
     if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || !window.supabase) { document.body.classList.remove("signed-in"); return; }
     S.sb = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
-    const { data } = await S.sb.auth.getSession(); S.user = data.session ? data.session.user : null;
-    document.body.classList.toggle("signed-in", !!S.user);
-    S.sb.auth.onAuthStateChange((_e, session) => { S.user = session ? session.user : null; document.body.classList.toggle("signed-in", !!S.user); });
+    const { data } = await S.sb.auth.getSession();
+    setUser(data.session ? data.session.user : null);
+    S.sb.auth.onAuthStateChange((_e, session) => {
+      const was = !!S.user; setUser(session ? session.user : null);
+      if (was !== !!S.user) {           // only on a real sign-in / sign-out, not token refreshes
+        if (S.user) { history.replaceState(null, "", "#score"); route(); }
+        else { history.replaceState(null, "", "#login"); route(); }
+      }
+    });
+  }
+  function setUser(u) {
+    S.user = u;
+    document.body.classList.toggle("signed-in", !!u);
+    const el = $("#nav-user"); el.textContent = u ? u.email : ""; el.title = u ? `Signed in as ${u.email}` : "";
   }
   document.addEventListener("DOMContentLoaded", async () => {
     $$(".mode button").forEach((b) => (b.onclick = () => { setMode(b.dataset.mode); route(); }));
-    $("#nav-logout").onclick = async () => { if (S.sb) await S.sb.auth.signOut(); location.hash = "#score"; };
+    $("#nav-logout").onclick = async () => { if (S.sb) await S.sb.auth.signOut(); };
     setMode(S.mode);
     try { await initAuth(); } catch (e) { console.warn("Supabase unavailable", e); }
     window.addEventListener("hashchange", route);
